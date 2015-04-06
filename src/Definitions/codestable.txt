@@ -1,0 +1,783 @@
+ITEM 
+ NO. CODE    DESCRIPTION
+---- ---- ----------------------------------
+   2  01  Municipal Police                                 
+   2  02  State Police                                     
+   2  03  County Police                                    
+   2  04  Port Authority Police                            
+   2  99  Other                                            
+  30  0   Unknown                                          
+  30  1   Black                                            
+  30  2   Brown                                            
+  30  3   Gray                                             
+  30  4   Blue                                             
+  30  5   Hazel                                            
+  30  6   Green                                            
+  30  7   Other                                            
+  30  8   Other                                            
+  30  9   Other                                            
+  60  0   Unknown                                          
+  60  1   Black                                            
+  60  2   Brown                                            
+  60  3   Gray                                             
+  60  4   Blue                                             
+  60  5   Hazel                                            
+  60  6   Green                                            
+  60  7   Other                                            
+  60  8   Other                                            
+  60  9   Other                                            
+  84  00  Unknown                                          
+  84  01  Driver                                           
+  84  02  Passenger (Front Middle)                                        
+  84  03  Passenger (Front Right)                                        
+  84  04  Passenger (2nd Seat Left)                                        
+  84  05  Passenger (2nd Seat Middle)                                        
+  84  06  Passenger (2nd Seat Right)                                        
+  84  07  Passenger (3rd Seat Left)                                        
+  84  08  Passenger (3rd Seat Middle)                                        
+  84  09  Passenger (3rd Seat Right)                                        
+  84  10  Cargo Area                                       
+  84  11  Riding/Hanging On Outside                        
+  85  00  Unknown                                          
+  85  01  Not Ejected                                      
+  85  02  Partial Ejection                                 
+  85  03  Ejected                                          
+  85  04  Trapped                                          
+  86  00  Unknown                                          
+  86  01  Killed                                           
+  86  02  Incapacitated                                    
+  86  03  Moderate Injury                                  
+  86  04  Complaint of Pain                                
+  89  00  Unknown                                          
+  89  01  Head                                             
+  89  02  Face                                             
+  89  03  Eye                                              
+  89  04  Neck                                             
+  89  05  Chest                                            
+  89  06  Back                                             
+  89  07  Shoulder/Upper Arm                               
+  89  08  Elbow/Lower Arm/Hand                             
+  89  09  Abdomen/Pelvis                                   
+  89  10  Hip/Upper Leg                                    
+  89  11  Knee/Lower Leg/Foot                              
+  89  12  Entire Body                                      
+  90  00  Unknown                                          
+  90  01  Amputation                                       
+  90  02  Concussion                                       
+  90  03  Internal                                         
+  90  04  Bleeding                                         
+  90  05  Contusion/Bruise/Abrasion                        
+  90  06  Burn                                             
+  90  07  Fracture/Dislocation                             
+  90  08  Complaint of Pain                                
+  91  0   Unknown                                          
+  91  1   Yes                                              
+  91  2   No                                               
+  92  00  Unknown                                          
+  92  01  None                                             
+  92  02  Lap Belt                                         
+  92  03  Harness                                          
+  92  04  Lap Belt & Harness                               
+  92  05  Child Restraint                                  
+  92  06  Helmet                                           
+  92  07  (reserved)                                       
+  92  08  Airbag                                           
+  92  09  Airbag & Seatbelts                              
+  92  10  Safety Vest (Ped only)                           
+  92  99  Other                                            
+  93  00  Unknown                                          
+  93  01  None                                             
+  93  02  Lap Belt                                         
+  93  03  Harness                                          
+  93  04  Lap Belt & Harness                               
+  93  05  Child Restraint                                  
+  93  06  Helmet                                           
+  93  07  (reserved)                                       
+  93  08  Airbag                                           
+  93  09  Airbag & Seatbelts                              
+  93  10  Safety Vest (Ped only)                           
+  93  99  Other                                            
+  94  01  Front                                            
+  94  02  Side                                             
+  94  07  Other                                            
+  94  08  Multiple                                         
+  96  00  Unknown                                          
+  96  01  Barrier Median                                   
+  96  02  Curbed Median                                    
+  96  03  Grass Median                                     
+  96  04  Painted Median                                   
+  96  05  None                                             
+  96  99  Other                                            
+  97  00  Unknown                                          
+  97  01  None                                             
+  97  02  Construction Zone                                
+  97  03  Maintenance Zone                                 
+  97  04  Utility Zone                                     
+  97  05  Incident Zone                                    
+  98  01  Daylight                                         
+  98  02  Dawn                                             
+  98  03  Dusk                                             
+  98  04  Dark (street lights off)                         
+  98  05  Dark (no street lights)                          
+  98  06  Dark (street lights on, continuous)              
+  98  07  Dark (street lights on, spot)                    
+  99  00  Unknown                                          
+  99  01  Interstate                                       
+  99  02  State Highway                                    
+  99  03  State/Interstate Authority                       
+  99  04  State Park or Institution                        
+  99  05  County                                           
+  99  06  County, Authority Park or Institution             
+  99  07  Municipal                                        
+  99  08  Municipal Authority, Park or Institution          
+  99  09  Private Property                                 
+  99  10  U.S. Government Property                         
+ 100  00  Unknown                                          
+ 100  01  Straight and Level                               
+ 100  02  Straight and Grade                               
+ 100  03  Straight at Hillcrest                           
+ 100  04  Curve and Level                                  
+ 100  05  Curve and Grade                                  
+ 100  06  Curve at Hillcrest                               
+ 101  00  Unknown                                          
+ 101  01  Concrete                                         
+ 101  02  Blacktop                                         
+ 101  03  Gravel                                           
+ 101  04  Steel Grid                                       
+ 101  05  Dirt                                             
+ 101  99  Other                                            
+ 102  00  Unknown                                          
+ 102  01  Dry                                              
+ 102  02  Wet                                              
+ 102  03  Snowy                                            
+ 102  04  Icy                                              
+ 102  05  Slush                                            
+ 102  06  Water (Standing/Moving)                          
+ 102  07  Sand, Mud, Dirt                                  
+ 102  08  Oil                                              
+ 102  99  Other                                            
+ 103  00  Unknown                                          
+ 103  01  Clear                                            
+ 103  02  Rain                                             
+ 103  03  Snow                                             
+ 103  04  Fog/Smog/Smoke                                   
+ 103  05  Overcast                                         
+ 103  06  Sleet/Hail/Freezing Rain                         
+ 103  07  Blowing Snow                                     
+ 103  08  Blowing Sand/Dirt                                
+ 103  09  Severe Crosswinds                                
+ 103  99  Other                                            
+ 105  00  Unknown                                          
+ 105  01  Same Direction (Rear End)                        
+ 105  02  Same Direction (Sideswipe)                       
+ 105  03  Right Angle                                      
+ 105  04  Opposite Direction (Head On, Angular)            
+ 105  05  Opposite Direction (Sideswipe)                   
+ 105  06  Struck Parked Vehicle                            
+ 105  07  Left Turn/U Turn                                 
+ 105  08  Backing                                          
+ 105  09  Encroachment                                     
+ 105  10  Overturned                                       
+ 105  11  Fixed Object                                     
+ 105  12  Animal                                           
+ 105  13  Pedestrian                                       
+ 105  14  Pedalcyclist                                     
+ 105  15  Non-fixed Object                                 
+ 105  16  Railcar - vehicle                                
+ 105  99  Other                                            
+ 106  00  Unknown                                          
+ 106  01  Yes                                              
+ 106  02  No                                               
+ 107  00  Unknown                                          
+ 107  01  Yes                                              
+ 107  02  No                                               
+ 108  00  Unknown                                          
+ 108  01  Car/Station Wagon/Mini Van                      
+ 108  02  Passenger Van (< 9 Seats)                        
+ 108  03  Cargo Van (10K lbs or less)                      
+ 108  04  Sport Utility Vehicle                                
+ 108  05  Pickup                                           
+ 108  06  Recreational Vehicle                             
+ 108  07  All Terrain Vehicle                              
+ 108  08  Motorcycle                                       
+ 108  09  (reserved)                                       
+ 108  10  Any previous w/Trailer                           
+ 108  11  Moped                                            
+ 108  12  Streetcar/Trolley                                
+ 108  13  Pedalcycle                                       
+ 108  19  Other Pass Vehicle                               
+ 108  20  Single Unit (2 axle)                             
+ 108  21  Single Unit (3+ axle)                            
+ 108  22  Light Truck w/Trailer                            
+ 108  23  Single Unit Truck w/Trailer                      
+ 108  24  Truck Tractor (Bobtail)                          
+ 108  25  Tractor Semi-Trailer                             
+ 108  26  Tractor Double                                   
+ 108  27  Tractor Triple                                   
+ 108  29  Other Truck                                      
+ 108  30  Bus/Large Van (9 or more Seats)                  
+ 108  99  Other                                            
+ 109  00  Unknown                                          
+ 109  01  Car/Station Wagon/Mini Van                      
+ 109  02  Passenger Van (< 9 Seats)                        
+ 109  03  Cargo Van (10K lbs or less)                      
+ 109  04  Sport Utility Vehicle                               
+ 109  05  Pickup                                           
+ 109  06  Recreational Vehicle                             
+ 109  07  All Terrain Vehicle                              
+ 109  08  Motorcycle                                       
+ 109  09  (reserved)                                       
+ 109  10  Any previous w/Trailer                           
+ 109  11  Moped                                            
+ 109  12  Streetcar/Trolley                                
+ 109  13  Pedalcycle                                       
+ 109  19  Other Pass Vehicle                               
+ 109  20  Single Unit (2 axle)                             
+ 109  21  Single Unit (3+ axle)                            
+ 109  22  Light Truck w/Trailer                            
+ 109  23  Single Unit Truck w/Trailer                      
+ 109  24  Truck Tractor (Bobtail)                          
+ 109  25  Tractor Semi-Trailer                             
+ 109  26  Tractor Double                                   
+ 109  27  Tractor Triple                                   
+ 109  29  Other Truck                                      
+ 109  30  Bus/Large Van (9 or more Seats)                  
+ 109  99  Other                                            
+ 110  01  Personal                                         
+ 110  02  Business/Commerce                                
+ 110  03  Government                                       
+ 110  04  Responding to Emergency                          
+ 110  05  Machinery in Use                                 
+ 111  01  Personal                                         
+ 111  02  Business/Commerce                                
+ 111  03  Government                                       
+ 111  04  Responding to Emergency                          
+ 111  05  Machinery in Use                                 
+ 112  01  Work Equipment                                   
+ 112  02  Police                                           
+ 112  03  Military                                         
+ 112  04  Fire/Rescue                                      
+ 112  05  Ambulance                                        
+ 112  06  Taxi/Limo                                        
+ 112  07  Veh Used as School Bus                           
+ 112  08  Veh Used as Other Bus                            
+ 112  09  School Bus                                       
+ 112  10  Transit Bus                                      
+ 112  11  Other Bus                                        
+ 112  12  Veh Used as Snowplow                            
+ 112  13  Vehicle Towing Another Veh                       
+ 112  99  Other                                            
+ 113  01  Work Equipment                                   
+ 113  02  Police                                           
+ 113  03  Military                                         
+ 113  04  Fire/Rescue                                      
+ 113  05  Ambulance                                        
+ 113  06  Taxi/Limo                                        
+ 113  07  Veh Used as School Bus                           
+ 113  08  Veh Used as Other Bus                            
+ 113  09  School Bus                                       
+ 113  10  Transit Bus                                      
+ 113  11  Other Bus                                        
+ 113  12  Veh Used as Snowplow                            
+ 113  13  Vehicle Towing Another Veh                       
+ 113  99  Other                                            
+ 114  00  Unknown                                          
+ 114  01  Bus (9-15 seats)                                 
+ 114  02  Bus (> 15 seats)                                
+ 114  03  Van/Enclosed Box                                 
+ 114  04  Cargo Tank                                       
+ 114  05  Flatbed                                          
+ 114  06  Dump                                             
+ 114  07  Concrete Mixer                                   
+ 114  08  Auto Transporter                                 
+ 114  09  Garbage/Refuse                                   
+ 114  10  Hopper (grain,gravel,chips)                      
+ 114  11  Pole (trailer)                                   
+ 114  12  Intermodal Chassis                               
+ 114  13  No Cargo Body                                    
+ 114  99  Other                                            
+ 115  00  Unknown                                          
+ 115  01  Bus (9-15 seats)                                 
+ 115  02  Bus (> 15 seats)                                
+ 115  03  Van/Enclosed Box                                 
+ 115  04  Cargo Tank                                       
+ 115  05  Flatbed                                          
+ 115  06  Dump                                             
+ 115  07  Concrete Mixer                                   
+ 115  08  Auto Transporter                                 
+ 115  09  Garbage/Refuse                                   
+ 115  10  Hopper (grain,gravel,chips)                      
+ 115  11  Pole (trailer)                                   
+ 115  12  Intermodal Chassis                               
+ 115  13  No Cargo Body                                    
+ 115  99  Other                                            
+ 116  01  North                                            
+ 116  02  East                                             
+ 116  03  South                                            
+ 116  04  West                                             
+ 117  01  North                                            
+ 117  02  East                                             
+ 117  03  South                                            
+ 117  04  West                                             
+ 118  00  Unknown                                          
+ 118  01  Unsafe Speed                                     
+ 118  02  Driver Inattention                              
+ 118  03  Failed To Obey Traffic Control Device            
+ 118  04  Failed To Yield ROW to Vehicle/Pedes.                     
+ 118  05  Improper Lane Change                             
+ 118  06  Improper Passing                                 
+ 118  07  Improper Use/Failed to Use Turn Signal   
+ 118  08  Improper Turning                                 
+ 118  09  Following Too Closely                            
+ 118  10  Backing Unsafely                                 
+ 118  11  Improper Use/ No Lights                          
+ 118  12  Wrong Way                                        
+ 118  13  Improper Parking                                 
+ 118  14  Failure to Keep Right                            
+ 118  25  None                                             
+ 118  29  Other Driver/Pedalcyclist Action                
+ 118  31  Defective Lights                                
+ 118  32  Brakes                                          
+ 118  33  Steering                                        
+ 118  34  Tires                                           
+ 118  35  Wheels                                          
+ 118  36  Windows/Windshield                              
+ 118  37  Mirrors                                         
+ 118  38  Wipers                                          
+ 118  39  Veh Coupling/Hitch/Safety Chains                
+ 118  49  Other Vehicle Factors                            
+ 118  51  Road Surface Condition                          
+ 118  52  Obstruction/Debris in Road                      
+ 118  53  Ruts, Holes, Bumps                              
+ 118  54  Control Device Defective or Missing             
+ 118  55  Improper Work Zone                              
+ 118  56  Physical Obstructions (viewing,etc)             
+ 118  57  Animals in Roadway                              
+ 118  58  Improper/Inadequate Lane Markings               
+ 118  59  Sunglare                                        
+ 118  69  Other Roadway Factors                            
+ 118  71  Failed to Obey Traffic Control Device            
+ 118  72  Crossing Where Prohibited                        
+ 118  73  Dark Clothing/Low Visibility to Driver           
+ 118  74  Inattentive                                     
+ 118  75  Failure to Yield to ROW                 
+ 118  76  Walking on Wrong Side of Road                    
+ 118  77  Walking in Road When Sidewalk Present            
+ 118  78  Running/Darting Across Traffic                   
+ 118  85  None                                             
+ 118  89  Other Pedestrian Factors                         
+ 118  99  Other                                            
+ 119  00  Unknown                                          
+ 119  01  Unsafe Speed                                     
+ 119  02  Driver Inattention                              
+ 119  03  Failed To Obey Traffic Control Device            
+ 119  04  Failed To Yield ROW to Vehicle/Pedes.                     
+ 119  05  Improper Lane Change                             
+ 119  06  Improper Passing                                 
+ 119  07  Improper Use/Failed to Use Turn Signal   
+ 119  08  Improper Turning                                 
+ 119  09  Following Too Closely                            
+ 119  10  Backing Unsafely                                 
+ 119  11  Improper Use/ No Lights                          
+ 119  12  Wrong Way                                        
+ 119  13  Improper Parking                                 
+ 119  14  Failure to Keep Right                            
+ 119  25  None                                             
+ 119  29  Other Driver/Pedalcyclist Action                
+ 119  31  Defective Lights                                
+ 119  32  Brakes                                          
+ 119  33  Steering                                        
+ 119  34  Tires                                           
+ 119  35  Wheels                                          
+ 119  36  Windows/Windshield                              
+ 119  37  Mirrors                                         
+ 119  38  Wipers                                          
+ 119  39  Veh Coupling/Hitch/Safety Chains                
+ 119  49  Other Vehicle Factors                            
+ 119  51  Road Surface Condition                          
+ 119  52  Obstruction/Debris in Road                      
+ 119  53  Ruts, Holes, Bumps                              
+ 119  54  Control Device Defective or Missing             
+ 119  55  Improper Work Zone                              
+ 119  56  Physical Obstructions (viewing,etc)             
+ 119  57  Animals in Roadway                              
+ 119  58  Improper/Inadequate Lane Markings               
+ 119  59  Sunglare                                        
+ 119  69  Other Roadway Factors                            
+ 119  71  Failed to Obey Traffic Control Device            
+ 119  72  Crossing Where Prohibited                        
+ 119  73  Dark Clothing/Low Visibility to Driver           
+ 119  74  Inattentive                                     
+ 119  75  Failure to Yield to ROW                 
+ 119  76  Walking on Wrong Side of Road                    
+ 119  77  Walking in Road When Sidewalk Present            
+ 119  78  Running/Darting Across Traffic                   
+ 119  85  None                                             
+ 119  89  Other Pedestrian Factors                         
+ 119  99  Other                                            
+ 120  00  Unknown                                          
+ 120  01  Apparently Normal                                
+ 120  02  Alcohol Use                                      
+ 120  03  Drug Use (Illicit)                               
+ 120  04  Medication                                       
+ 120  05  Alcohol & Drug/Medication Use                    
+ 120  06  Physical Handicaps                               
+ 120  07  Illness                                          
+ 120  08  Fatigue                                          
+ 120  09  Fell Asleep                                      
+ 120  99  Other                                            
+ 121  00  Unknown                                          
+ 121  01  Apparently Normal                                
+ 121  02  Alcohol Use                                      
+ 121  03  Drug Use (Illicit)                               
+ 121  04  Medication                                       
+ 121  05  Alcohol & Drug/Medication Use                    
+ 121  06  Physical Handicaps                               
+ 121  07  Illness                                          
+ 121  08  Fatigue                                          
+ 121  09  Fell Asleep                                      
+ 121  99  Other                                            
+ 122  00  Unknown                                          
+ 122  01  Handheld                                         
+ 122  02  Hands Free                                       
+ 122  99  Other                                            
+ 123  00  Unknown                                          
+ 123  01  Handheld                                         
+ 123  02  Hands Free                                       
+ 123  99  Other                                            
+ 124  00  Unknown                                          
+ 124  01  Going Straight Ahead                             
+ 124  02  Making Right Turn (not turn on red)              
+ 124  03  Making Left Turn                                 
+ 124  04  Making U Turn                                    
+ 124  05  Starting from Parking                            
+ 124  06  Starting in Traffic                              
+ 124  07  Slowing or Stopping                              
+ 124  08  Stopped in Traffic                               
+ 124  09  Parking                                          
+ 124  10  Parked                                           
+ 124  11  Changing Lanes                                   
+ 124  12  Merging/Entering Traffic Lane                    
+ 124  13  Backing                                          
+ 124  14  Driverless/Moving                                
+ 124  15  Passing                                          
+ 124  16  Negotiating Curve                                
+ 124  17  Driving On Shoulder                              
+ 124  18  Right Turn On Red                                
+ 124  29  Other Veh/Cyclist Action                       
+ 124  31  Pedestrian Off Road                              
+ 124  32  Walking To/From School                           
+ 124  33  Walking/Jogging with Traffic                     
+ 124  34  Walking/Jogging Against Traffic                  
+ 124  35  Playing in Road                                  
+ 124  36  Standing/Lying/Kneeling in Road                  
+ 124  37  Getting On/Off Vehicle                           
+ 124  38  Pushing/Working on Vehicle                       
+ 124  39  Other Working in Roadway                         
+ 124  40  Approaching/Leaving Schoolbus                    
+ 124  41  Coming From Behind Parked Vehicle                
+ 124  42  (reserved)                                       
+ 124  43  Crossing at "marked" Crosswalk at Intersection   
+ 124  44  Crossing at "unmarked" Crosswalk at Intersection 
+ 124  45  Crossing at "marked" Crosswalk at Mid-Block      
+ 124  46  Crossing/Jaywalking at Mid-Block                 
+ 124  49  Other Pedestrian Action                         
+ 124  99  Other                                            
+ 125  00  Unknown                                          
+ 125  01  Going Straight Ahead                             
+ 125  02  Making Right Turn (not turn on red)              
+ 125  03  Making Left Turn                                 
+ 125  04  Making U Turn                                    
+ 125  05  Starting from Parking                            
+ 125  06  Starting in Traffic                              
+ 125  07  Slowing or Stopping                              
+ 125  08  Stopped in Traffic                               
+ 125  09  Parking                                          
+ 125  10  Parked                                           
+ 125  11  Changing Lanes                                   
+ 125  12  Merging/Entering Traffic Lane                    
+ 125  13  Backing                                          
+ 125  14  Driverless/Moving                                
+ 125  15  Passing                                          
+ 125  16  Negotiating Curve                                
+ 125  17  Driving On Shoulder                              
+ 125  18  Right Turn On Red                                
+ 125  29  Other Veh/Cyclist Action                       
+ 125  31  Pedestrian Off Road                              
+ 125  32  Walking To/From School                           
+ 125  33  Walking/Jogging with Traffic                     
+ 125  34  Walking/Jogging Against Traffic                  
+ 125  35  Playing in Road                                  
+ 125  36  Standing/Lying/Kneeling in Road                  
+ 125  37  Getting On/Off Vehicle                           
+ 125  38  Pushing/Working on Vehicle                       
+ 125  39  Other Working in Roadway                         
+ 125  40  Approaching/Leaving Schoolbus                    
+ 125  41  Coming From Behind Parked Vehicle                
+ 125  42  (reserved)                                       
+ 125  43  Crossing at "marked" Crosswalk at Intersection   
+ 125  44  Crossing at "unmarked" Crosswalk at Intersection 
+ 125  45  Crossing at "marked" Crosswalk at Mid-Block      
+ 125  46  Crossing/Jaywalking at Mid-Block                 
+ 125  49  Other Pedestrian Action                         
+ 125  99  Other                                            
+ 126  00  Unknown                                          
+ 126  01  Police Officer                                   
+ 126  02  RR Watchman, Gates, etc                          
+ 126  03  Traffic Signal                                   
+ 126  04  Lane Markings                                    
+ 126  05  Channelization - Painted                         
+ 126  06  Channelization - Physical                        
+ 126  07  Warning Signal                                   
+ 126  08  Stop Sign                                        
+ 126  09  Yield Sign                                       
+ 126  10  Flagman                                          
+ 126  11  No Control Present                               
+ 126  12  Flashing Traffic Control                         
+ 126  13  School Zone (Signs/Controls)                     
+ 126  14  Adult Crossing Guard                             
+ 126  99  Other                                            
+ 127  00  Unknown                                          
+ 127  01  Police Officer                                   
+ 127  02  RR Watchman, Gates, etc                          
+ 127  03  Traffic Signal                                   
+ 127  04  Lane Markings                                    
+ 127  05  Channelization - Painted                         
+ 127  06  Channelization - Physical                        
+ 127  07  Warning Signal                                   
+ 127  08  Stop Sign                                        
+ 127  09  Yield Sign                                       
+ 127  10  Flagman                                          
+ 127  11  No Control Present                               
+ 127  12  Flashing Traffic Control                         
+ 127  13  School Zone (Signs/Controls)                     
+ 127  14  Adult Crossing Guard                             
+ 127  99  Other                                            
+ 128  00  Unknown                                          
+ 128  01  Overturn/Rollover                              
+ 128  02  Fire/Explosion                                   
+ 128  03  Immersion                                        
+ 128  04  Jackknife                                        
+ 128  05  Ran Off Road - Right                             
+ 128  06  Ran Off Road - Left                              
+ 128  07  Crossed Median/Centerline                        
+ 128  08  Downhill Runaway                                 
+ 128  09  Cargo/Equipment Loss or Shift                    
+ 128  10  Separation of Units                              
+ 128  11  Fell/Jumped From Vehicle                         
+ 128  12  Thrown/Falling Object                            
+ 128  13  Equipment Failure                                
+ 128  19  Other Non Collision                              
+ 128  21  Pedalcyclist                                     
+ 128  22  Pedestrian                                       
+ 128  23  Train/Trolley/Other Railcar                      
+ 128  24  Deer                                             
+ 128  25  Other Animal                                     
+ 128  26  MV in Transport                                  
+ 128  27  MV in Transport, Other Roadway                   
+ 128  28  Parked MV                                        
+ 128  29  Work Zone or Maint. Equipment                    
+ 128  30  Struck by Object Set in Motion by MV             
+ 128  39  Other Non-Fixed Object                           
+ 128  41  Impact Attenuator/Crash Cushion                  
+ 128  42  Bridge Overhead Structure                        
+ 128  43  Bridge Pier or Support                           
+ 128  44  Bridge Parapet End                               
+ 128  45  Bridge Rail                                      
+ 128  46  Guardrail Face                                   
+ 128  47  Guardrail End                                    
+ 128  48  Concrete Traffic Barrier                         
+ 128  49  Other Traffic Barrier                            
+ 128  50  Traffic Sign Support                             
+ 128  51  Traffic Signal Standard                          
+ 128  52  Utility Pole                                     
+ 128  53  Light Standard                                   
+ 128  54  Other Post,Pole,Support                          
+ 128  55  Culvert                                          
+ 128  56  Curb                                             
+ 128  57  Ditch                                            
+ 128  58  Embankment                                       
+ 128  59  Fence                                            
+ 128  60  Tree                                             
+ 128  61  Mailbox                                          
+ 128  62  Fire Hydrant                                     
+ 128  69  Other Fixed Object                               
+ 128  99  Other                                            
+ 129  00  Unknown                                          
+ 129  01  Overturn/Rollover                              
+ 129  02  Fire/Explosion                                   
+ 129  03  Immersion                                        
+ 129  04  Jackknife                                        
+ 129  05  Ran Off Road - Right                             
+ 129  06  Ran Off Road - Left                              
+ 129  07  Crossed Median/Centerline                        
+ 129  08  Downhill Runaway                                 
+ 129  09  Cargo/Equipment Loss or Shift                    
+ 129  10  Separation of Units                              
+ 129  11  Fell/Jumped From Vehicle                         
+ 129  12  Thrown/Falling Object                            
+ 129  13  Equipment Failure                                
+ 129  19  Other Non Collision                              
+ 129  21  Pedalcyclist                                     
+ 129  22  Pedestrian                                       
+ 129  23  Train/Trolley/Other Railcar                      
+ 129  24  Deer                                             
+ 129  25  Other Animal                                     
+ 129  26  MV in Transport                                  
+ 129  27  MV in Transport, Other Roadway                   
+ 129  28  Parked MV                                        
+ 129  29  Work Zone or Maint. Equipment                    
+ 129  30  Struck by Object Set in Motion by MV             
+ 129  39  Other Non-Fixed Object                           
+ 129  41  Impact Attenuator/Crash Cushion                  
+ 129  42  Bridge Overhead Structure                        
+ 129  43  Bridge Pier or Support                           
+ 129  44  Bridge Parapet End                               
+ 129  45  Bridge Rail                                      
+ 129  46  Guardrail Face                                   
+ 129  47  Guardrail End                                    
+ 129  48  Concrete Traffic Barrier                         
+ 129  49  Other Traffic Barrier                            
+ 129  50  Traffic Sign Support                             
+ 129  51  Traffic Signal Standard                          
+ 129  52  Utility Pole                                     
+ 129  53  Light Standard                                   
+ 129  54  Other Post,Pole,Support                          
+ 129  55  Culvert                                          
+ 129  56  Curb                                             
+ 129  57  Ditch                                            
+ 129  58  Embankment                                       
+ 129  59  Fence                                            
+ 129  60  Tree                                             
+ 129  61  Mailbox                                          
+ 129  62  Fire Hydrant                                     
+ 129  69  Other Fixed Object                               
+ 129  99  Other                                            
+ 130  00  Unknown                                          
+ 130  01  1 O'Clock Position                               
+ 130  02  2 O'Clock Position                               
+ 130  03  3 O'Clock Position                               
+ 130  04  4 O'Clock Position                               
+ 130  05  5 O'Clock Position                               
+ 130  06  6 O'Clock Position                               
+ 130  07  7 O'Clock Position                               
+ 130  08  8 O'Clock Position                               
+ 130  09  9 O'Clock Position                               
+ 130  10  10 O'Clock Position                              
+ 130  11  11 O'Clock Position                              
+ 130  12  12 O'Clock Position                              
+ 130  13  Roof                                             
+ 130  14  Undercarriage                                    
+ 130  15  Overturned                                       
+ 130  17  None Visible                                     
+ 130  99  Other                                            
+ 131  00  Unknown                                          
+ 131  01  1 O'Clock Position                               
+ 131  02  2 O'Clock Position                               
+ 131  03  3 O'Clock Position                               
+ 131  04  4 O'Clock Position                               
+ 131  05  5 O'Clock Position                               
+ 131  06  6 O'Clock Position                               
+ 131  07  7 O'Clock Position                               
+ 131  08  8 O'Clock Position                               
+ 131  09  9 O'Clock Position                               
+ 131  10  10 O'Clock Position                              
+ 131  11  11 O'Clock Position                              
+ 131  12  12 O'Clock Position                              
+ 131  13  Roof                                             
+ 131  14  Undercarriage                                    
+ 131  15  Overturned                                       
+ 131  17  None Visible                                     
+ 131  99  Other                                            
+ 132  00  Unknown                                          
+ 132  01  1 O'Clock Position                               
+ 132  02  2 O'Clock Position                               
+ 132  03  3 O'Clock Position                               
+ 132  04  4 O'Clock Position                               
+ 132  05  5 O'Clock Position                               
+ 132  06  6 O'Clock Position                               
+ 132  07  7 O'Clock Position                               
+ 132  08  8 O'Clock Position                               
+ 132  09  9 O'Clock Position                               
+ 132  10  10 O'Clock Position                              
+ 132  11  11 O'Clock Position                              
+ 132  12  12 O'Clock Position                              
+ 132  13  Roof                                             
+ 132  14  Undercarriage                                    
+ 132  15  Overturned                                       
+ 132  17  None Visible                                     
+ 132  99  Other                                            
+ 133  00  Unknown                                          
+ 133  01  1 O'Clock Position                               
+ 133  02  2 O'Clock Position                               
+ 133  03  3 O'Clock Position                               
+ 133  04  4 O'Clock Position                               
+ 133  05  5 O'Clock Position                               
+ 133  06  6 O'Clock Position                               
+ 133  07  7 O'Clock Position                               
+ 133  08  8 O'Clock Position                               
+ 133  09  9 O'Clock Position                               
+ 133  10  10 O'Clock Position                              
+ 133  11  11 O'Clock Position                              
+ 133  12  12 O'Clock Position                              
+ 133  13  Roof                                             
+ 133  14  Undercarriage                                    
+ 133  15  Overturned                                       
+ 133  17  None Visible                                     
+ 133  99  Other                                            
+STAT  AK  Alaska                                           
+STAT  AL  Alabama                                          
+STAT  AR  Arkansas                                         
+STAT  AZ  Arizona                                          
+STAT  CA  California                                       
+STAT  CO  Colorado                                         
+STAT  CT  Connecticutt                                     
+STAT  DC  District of Columbia                             
+STAT  DE  Delaware                                         
+STAT  FL  Florida                                          
+STAT  GA  Georgia                                          
+STAT  HI  Hawaii                                           
+STAT  IA  Iowa                                             
+STAT  ID  Idaho                                            
+STAT  IL  Illinois                                         
+STAT  IN  Indiana                                          
+STAT  KS  Kansas                                           
+STAT  KY  Kentucky                                         
+STAT  LA  Louisiana                                        
+STAT  MA  Massachusetts                                    
+STAT  MD  Maryland                                         
+STAT  ME  Maine                                            
+STAT  MI  Michigan                                         
+STAT  MN  Minnesota                                        
+STAT  MO  Missouri                                         
+STAT  MS  Mississippi                                      
+STAT  MT  Montana                                          
+STAT  MX  Mexico                                           
+STAT  NB  Nebraska                                         
+STAT  NC  North Carolina                                   
+STAT  ND  North Dakota                                     
+STAT  NH  New Hampshire                                    
+STAT  NJ  New Jersey                                       
+STAT  NM  New Mexico                                       
+STAT  NV  Nevada                                           
+STAT  NY  New York                                         
+STAT  OH  Ohio                                             
+STAT  OK  Oklahoma                                         
+STAT  ON  Ontario                                          
+STAT  OR  Oregon                                           
+STAT  PA  Pennsylvania                                     
+STAT  PR  Puerto Rico                                      
+STAT  QU  Quebec                                           
+STAT  RI  Rhode Island                                     
+STAT  SC  South Carolina                                   
+STAT  SD  South Dakota                                     
+STAT  TN  Tennessee                                        
+STAT  TX  Texas                                            
+STAT  UT  Utah                                             
+STAT  VA  Virginia                                         
+STAT  VT  Vermont                                          
+STAT  WA  Washington                                       
+STAT  WI  Wisconsin                                        
+STAT  WV  West Virginia                                    
+STAT  WY  Wyoming                                          
+STAT  ZZ  other                                            

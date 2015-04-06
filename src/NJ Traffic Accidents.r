@@ -1,5 +1,8 @@
 setProject(proj="NJTrafficAccidents", create=TRUE, subl=FALSE, load=FALSE)
 
+
+minYear <- 2010
+
 reportTypes <- c("Accidents", "Drivers", "Vehicles")
 selfname_( reportTypes )
 files <- extractFilesFromFolder(ingest.p(), ext="txt", full=TRUE)
@@ -28,18 +31,14 @@ stopifnot(files.info[, lapply(reportTypes,  "%in%", report_type), by=kCols.yc][!
 # DT.toDownload[tmp_DT.missing[, 1:2, with=FALSE]][, file.exists(file.out.zip)]
 
 
+
 Y <- 2013
 Cnty <- "Monmouth"
-Type <- "Accidents"
 # iter :   for (f in files) {
 
-  
-  DT.accidents <- rbindlist(suppressWarnings(lapply(files.info[report_type == Type]$file, fread)))
-
-  f.accidents  <- files[files.info[J(Y, Cnty, "Accidents")]$filename]
-  DT.accidents <- suppressWarnings(fread(f.accidents))
-
-  setnames(DT.accidents, colNames.raw[["Accidents"]])
+  Type <- "Accidents"
+  DT.accidents <- rbindlist(suppressWarnings(lapply(files.info[year >= minYear] [report_type == Type]$file, fread)))
+  setnames(DT.accidents, gsub(" ", "_", colNames.raw[[Type]]))
 
   ## clean up the join_id
   DT.accidents[, c("Year", "County Code", "Municipality Code", "Department Case Number") := 
@@ -72,5 +71,26 @@ Type <- "Accidents"
   stopifnot(tmp_NAs == is.na(DT.accidents))
 
 
+  -------------------------------------
+
+  Type <- "Drivers"
+  DT.drivers <- rbindlist(lapply(files.info[year >= minYear] [report_type == "Drivers"]$file, function(f) suppressWarnings(fread(f, colClass="character"))))
+  setnames(DT.drivers, gsub(" ", "_", colNames.raw[[Type]]))
+
+  ## Confirm zipcodes are okay
+  stopifnot(0 == nrow(DT.drivers[!is.na(`Driver_Zip_Code`)][(nchar(`Driver_Zip_Code`)) != 5]))
+
+  DT.drivers[, table(Driver_Physical_Status)]
+  factorCols <- c("Driver_State", "Driver_Zip_Code", "Driver_License_State", "Driver_Sex", "Alcohol_Test_Given", "Alcohol_Test_Type", "Alcohol_Test_Results", "Charge", "Summons", "Multi_Charge_Flag", "Driver_Physical_Status")
+  DT.drivers[, (factorCols) := lapply(.SD, factor), .SDcols=factorCols]
+
+  ## Convert some numbers back to numbers
+  numbCols <- c("Alcohol_Test_Results", "Vehicle_Number")
+  DT.drivers[, (numbCols) := lapply(.SD, as.numeric), .SDcols=numbCols]
+
+  summary(DT.drivers)
+
+
+Occupants
 # iter :   }
 

@@ -1,0 +1,54 @@
+http://www.state.nj.us/transportation/refdata/accident/acc_detail_sum.shtm
+
+Crash Records
+Crash Detail Summary
+
+The details below pertain to the development of the Crash Summary Reports that provide for statewide crash percentages for various types of crashes. The same principles can be applied to the County Data Files to arrive at county specific percentages. Percentages are computed by the number of crashes in the category described divided by the base (total crashes) times 100. See accompanying County Data File Layout for character positions of the fields described.
+
+Select those records for the Road System desired (Accident Table, Bytes 246-247) where:
+
+01 = Interstate, 02 = State, 05 = County, 07 = Municipal
+
+Total Crashes is the base for all computations.
+
+Severity is based on Total Killed (Accident Table, Bytes 135-136) and Total Injured (Accident Table, Bytes 138-139)
+% Fatal uses the number of crashes where Total Killed > 0.
+% Injury uses the number of crashes where Total Killed = 0 and Total Injured > 0.
+% Property Damage uses the number of crashes where Total Killed = 0 and Total Injured = 0.
+Collision Types are based on Crash Type Code (Accident Table, Bytes 155-156)
+% Same Direction – Rear End uses the number of crashes where Crash Type Code = ‘01’.
+% Same Direction – Sideswipe uses the number of crashes where Crash Type Code = ‘02’.
+% Angle uses the number of crashes where Crash Type Code = ‘03’.
+% Head On uses the number of crashes where Crash Type Code = ‘04’ or ‘05’.
+% Parked Vehicle uses the number of crashes where Crash Type Code = ‘06’.
+% Left Turn / U Turn uses the number of crashes where Crash Type Code = ‘07’.
+% Backing uses the number of crashes where Crash Type Code = ‘08’.
+% Encroachment uses the number of crashes where Crash Type Code = ‘09’.
+% Overturned uses the number of crashes where Crash Type Code = ‘10’.
+% Fixed Object uses the number of crashes where Crash Type Code = ‘11’.
+% Animal uses the number of crashes where Crash Type Code = ‘12’.
+% Pedestrian uses the number of crashes where Crash Type Code = ‘13’.
+% Pedalcycle uses the number of crashes where Crash Type Code = ‘14’.
+% Non-Fixed Object uses the number of crashes where Crash Type Code = ‘15’.
+% Railcar - Vehicle uses the number of crashes where Crash Type Code = ‘16’.
+% Unknown uses the number of crashes where Crash Type Code = ‘00’ (Unknown).
+% Other uses the number of crashes where Crash Type Code = ‘99’ (Other).
+Intersection is based on Intersection (Accident Table, Byte 149) and Traffic Controls Present (Vehicle Table, Bytes 121-122)
+% At Signalized uses the number of crashes where Intersection = ‘I’ and Traffic Control = ‘03’.
+% At Unsignalized uses crashes where Intersection = ‘I’ and Traffic Control is not ‘02’ nor ‘03’.
+% Between Intersection uses the number of crashes where Intersection = ‘B’.
+% RR Crossing uses the number of crashes where Intersection = ‘I’ and Traffic Control = ‘02’.
+Surface Conditions are based on Surface Condition Code (Accident Table, Bytes 255-256)
+% Dry Surface uses the number of crashes where Surface Condition = ‘01’.
+% Wet Surface uses the number of crashes where Surface Condition = ‘02’ or ‘06’.
+% Snow uses the number of crashes where Surface Condition = ‘03’.
+% Ice uses the number of crashes where Surface Condition = ‘04’.
+% Unknown uses the number of crashes where Surface Condition = ‘00’.
+% Other uses the number of crashes where Surface Condition = ’05, ‘07’, ‘08’ or ‘99’.
+Light Conditions are based on Light Condition Code (Accident Table, Bytes 258-259)
+% Day uses the number of crashes where Light Condition = ‘01’.
+% Dusk uses the number of crashes where Light Condition = ‘03’.
+% Night uses the number of crashes where Light Condition = ‘04’, ‘05’, ‘06’ or ‘07’.
+% Dawn uses the number of crashes where Light Condition = ‘02’.
+% Unknown uses the number of crashes where Light Condition = ‘00’.
+% Other uses the number of crashes where Light Condition = ‘99’.

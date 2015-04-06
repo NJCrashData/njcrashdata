@@ -1,3 +1,5 @@
+## eg:  http://www.state.nj.us/transportation/refdata/accident/2013/Monmouth2013Accidents.zip
+##
 ##  2013/Monmouth2013Accidents
 ##  
 ##  base="/transportation/refdata/accident/2013/"
