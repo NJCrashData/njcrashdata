@@ -1,4 +1,4 @@
-source("~/git/NJTrafficAccidents/src/00 NJ Traffic Accidents Setup.r")
+source("~/git/NJCrashData/src/00 NJCrashData Setup.r")
 
 
 files <- extractFilesFromFolder(ingest.p(), ext="txt", full=TRUE)

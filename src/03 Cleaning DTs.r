@@ -85,7 +85,7 @@ DT.Accidents[(substr(time_of_crash, 1, 2)) == 95]
 convertNumberCols_(DT.Accidents, verbose=TRUE)
 
 
-(local OSX) R|NJTrafficAccidents> nwhich(canBeNumeric(DT.Accidents))
+(local OSX) R|NJCrashData> nwhich(canBeNumeric(DT.Accidents))
  [1] "time_of_crash"                   "Police_Dept_Code"                "Total_Killed"
  [4] "Total_Injured"                   "Pedestrians_Killed"              "Pedestrians_Injured"
  [7] "Crash_Type_Code"                 "Total_Vehicles_Involved"         "Route"
@@ -96,7 +96,7 @@ convertNumberCols_(DT.Accidents, verbose=TRUE)
 [22] "Ramp_To_or_From_Route_Direction" "Posted_Speed"                    "Posted_Speed_Cross_Street"
 [25] "Latitude"                        "Longitude"                       "Year"
 [28] "County Code"                     "Municipality Code"
-(local OSX) R|NJTrafficAccidents>
+(local OSX) R|NJCrashData>
 
 
 

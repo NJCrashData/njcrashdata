@@ -15,7 +15,7 @@
 ##  
 ##  
 
-setProject(proj="NJTrafficAccidents", create=FALSE, subl=FALSE, load=FALSE, ingestIn_gitData=TRUE)
+setProject(proj="NJCrashData", create=FALSE, subl=FALSE, load=FALSE, ingestIn_gitData=TRUE)
 
 lib(data.table)
 lib(RCurl)
