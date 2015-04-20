@@ -121,6 +121,9 @@ if (FALSE) {
   join_ids_with_poundsign <- DT.Accidents[grepl("\\#", geo.streetAddress)][, join_id[[1]], by=list(Municipality, geo.streetAddress)]$V1
 }
 
+## --------------------------- ##
+##        Using TAMU           ##
+## --------------------------- ##
 if (FALSE) {
   # ## Query the TAMU API
   colsBringing <- c("latitude", "longitude", "match_type", "matched_location_type")
@@ -144,7 +147,7 @@ if (FALSE) {
                 )]
   }
 
-DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
+  DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
   if (is.data.table(DT.ret) && identical(DT.ret[["internal_id"]], DT.Accidents[["join_id"]])) {
       if (any(colsBringing %in% names(DT.Accidents)))
         warning ("Some columns in colsBringing is/are already in DT.Accidents --- DT.ret NOT brought over")
@@ -156,20 +159,29 @@ DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
   }
 }
 
-
-## OUTPUT DT to file to batch process. But that still has the same limit
+## --------------------------- ##
+##        Using Google         ##
+## --------------------------- ##
 if (FALSE) {
-    file_for_batch <- writeDT(
-            DT = DT.Accidents[i=TRUE, list(unique_id=join_id, streetAddress=geo.streetAddress, city=Municipality, state="NJ")]
-            , ext = "csv"
-            , base.file.name = paste0(Cnty, "_batch_file")
-            , subfolder = "geocode_batch"
-          )
-
-    subl(file_for_batch)
+  DT.ret_ggmap <- {
+    DT.Acc_code[unique(c(1, which(match_type != "Exact" & Municipality_Code == 35))) ,
+    # DT.Accidents[, 
+      geocode_google(streetAddress = geo.streetAddress
+                  , city = Municipality
+                  , state = "NJ"
+                  , zip = NULL
+                  , internal_id=join_id
+                  , folder = data.p("geocode_ggmap_results", County[[1]])
+                  , colsToReturn = c("internal_id", colsBringing)
+                  , iter_size = 201
+                )]
+  }
+  message("Compare the results from DT.ret_ggmap to that from TAMU -- then add the geo data back into DT.Accidents and DT.Acc_code")
+  print(DT.ret_ggmap)
 }
 
-## ALTERNATE
+
+## ALTERNATE FOR ADDING THE DATA BACK IN
 if (FALSE) 
 {
   loadFromJesus("DT.geocode_with_tamu", overwrite.ifexists=FALSE, dont.fail.ifexists=TRUE)
@@ -181,8 +193,12 @@ if (FALSE)
 }
 
 
+## --------------------------- ##
+##      CREATE DT.Acc_code     ##
+## --------------------------- ##
+
 if ("latitude" %in% names(DT.Accidents)) {
-  DT.Acc_code <- DT.Accidents[!is.na(latitude)]
-  jesusForData(DT.Acc_code)
+    DT.Acc_code <- DT.Accidents[!is.na(latitude)]
+    jesusForData(DT.Acc_code)
 }
 

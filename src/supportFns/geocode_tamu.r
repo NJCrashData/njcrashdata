@@ -274,7 +274,7 @@ geocode_google <- function(
 ) {
 
 
-    stop ("This function is incomplete")
+    # stop ("This function is incomplete")
 
     output <- match.arg(output, choices=c("latlon", "latlona", "more", "all"), several.ok=FALSE)
 
@@ -413,8 +413,7 @@ geocode_google <- function(
     ## ggmap source :     gcdf$query <- loc
     ## ggmap source :     return(gcdf)
 
-    return (url_results)
-
+    return (DT.ret)
 }
 
 
