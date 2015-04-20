@@ -1,4 +1,4 @@
-setProject(proj="NJCrashData", create=TRUE, subl=FALSE, load=FALSE)
+setproject(proj="NJCrashData", create=TRUE, subl=FALSE, load=FALSE)
 
 
 minYear <- 2010

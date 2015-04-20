@@ -1,5 +1,4 @@
-source("~/git/NJCrashData/src/00 NJCrashData Setup.r")
-
+source("~/development/NJCrashData/src/00 NJCrashData Setup.r")
 
 files <- extractFilesFromFolder(ingest.p(), ext="txt", full=TRUE)
 

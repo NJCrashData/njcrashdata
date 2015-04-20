@@ -7,3 +7,5 @@ minYear <- 2011
 ## For test work
 Cnty <- "Monmouth"
 Y <- 2013
+
+verbose <- TRUE
