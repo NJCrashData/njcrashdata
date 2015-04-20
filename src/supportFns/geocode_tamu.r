@@ -264,8 +264,9 @@ geocode_google <- function(
   , internal_id = NULL
   , colsToReturn = c("latitude", "longitude", "match_type", "matched_location_type")
   , folder = data.p("geocode_ggmap_results")
-  , file_name = paste0("ggmap_results_", file_time_stamp, ".", tolower(format))
+  , file_name = paste0("ggmap_results_", file_time_stamp, ".", "psv")
   , file_time_stamp = format(Sys.time(), "%Y%m%d_%H%M%S")
+  , file_sep = "|"
   , iter_size = 100
   , break_on_blank = TRUE
   , bad_request_file = data.p("geocode_ggmap_results", "join_ids_yielding_badrequests", ext="csv")
@@ -305,27 +306,49 @@ geocode_google <- function(
     setattr(URLS, "names", names(location))
     URLS <- sapply(URLS, URLencode)
 
+    ## TODO
+    stopifnot(length(internal_id) != length(URLS))
+
+    ## Write data to file
+    file_out <- file.path(folder, file_name)
+    if (!file.exists(file_out)) {
+        dir.create(dirname(file_out), showWarnings=FALSE, recursive=TRUE)
+        write(x=c("join_id", "raw_json"), file=file_out, ncolumns=2, append=TRUE, sep=file_sep)
+    }
+    verboseMsg(verbose, "API results will be written to\n   \"", file_out, "\"    ", minw=82, sep="")
+
     ## Output
     verboseMsg(verbose, "Will attempt to geocode", length(URLS), "addresses\n")
 
     ## Execute
-    ret <- getURL(URLS)
-    if (any(grepl("You have exceeded your rate", ret))) {
+    url_results <- getURL(URLS)
+
+    ## results across the file according to 'top-down' in the matrix
+    ## Thus use t(cbind(..))  --  or equivalently rbind(..)
+    write(x=rbind(internal_id, url_results), file=file_out, ncolumns=2, append=TRUE, sep=file_sep)
+
+    if (any(grepl("You have exceeded your rate", url_results))) {
         warning ("rate limit exceeded for API", call.=FALSE)
         break
     }
-    setattr(ret, "names", nms)
+    setattr(url_results, "names", nms)
 
     ## Capture errors and blanks
-    errors <- grepl("error_message", ret)
-    blanks <- grepl("ZERO_RESULTS",  ret)
+    errors <- grepl("error_message", url_results)
+    blanks <- grepl("ZERO_RESULTS",  url_results)
 
     ### ----- DID 
-    parsed <- lapply(ret, rjson::fromJSON)
+    parsed <- lapply(url_results, rjson::fromJSON)
 
-    error_messages <- sapply(parsed, "[[", "error_message")
-    statusses      <- sapply(parsed, "[[", "status")
-    results        <- sapply(parsed, "[[", "results")
+    error_messages <- if (any(errors)) sapply(parsed, "[[", "error_message")
+    statusses <- sapply(parsed, "[[", "status")
+    results   <- sapply(parsed, "[[", "results")
+
+    ## TODO:  Check for more than one geometry
+    latlon <- lapply(results, function(x) c(latitude=x$geometry$location$lat, longitude=x$geometry$location$lng, location_type=x$geometry$location_type))
+
+    ## Combine internal_id with an rbind of the latlon data
+    DT.ret <- data.table(internal_id, do.call(rbind, latlon))
 
     "&& TODO:  Finish parsing.   No results available since all are showing over rate limit"
 
@@ -390,7 +413,7 @@ geocode_google <- function(
     ## ggmap source :     gcdf$query <- loc
     ## ggmap source :     return(gcdf)
 
-    return (ret)
+    return (url_results)
 
 }
 
