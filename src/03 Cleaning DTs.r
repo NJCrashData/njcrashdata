@@ -86,7 +86,10 @@ DT.Accidents[is.na(time_of_crash), list(date_of_crash, time_of_crash, datetime_o
 
 ## Create streetAddress using location and cross street
 ## TODO: Incorporate ramp information, distance, etc
-DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(is.na(Cross_Street_Name), "", paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
+pat_to_not_include <- "(Parking|lot|deck|garage|Priv*Property)"
+DT.Accidents[, geo.include_cross_st := !is.na(Cross_Street_Name) & !grepl(pat_to_not_include, Cross_Street_Name, ignore.case=TRUE)]
+DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(geo.include_cross_st, "", paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
+
 
 ## Some basic cleaning
 DT.Accidents[, geo.streetAddress := gsub("(SH|HWY)\\s*#", "STATE HIGHWAY ", geo.streetAddress)]
