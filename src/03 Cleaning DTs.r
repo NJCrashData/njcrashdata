@@ -159,3 +159,11 @@ if (FALSE) {
 
     subl(file_for_batch)
 }
+
+## ALTERNATE
+if (FALSE) 
+{
+  loadFromJesus("DT.geocode_with_tamu", overwrite.ifexists=FALSE, dont.fail.ifexists=TRUE)
+  stopifnot("join_id" %in% names(DT.geocode_with_tamu))
+  DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
+}

@@ -195,7 +195,8 @@ geocode_tamu <- function(
     }
 
     ## Check for any non-200 status
-    DT.ret[query_status_code != 200 & transaction_id != 'bad_request', if (.N) warning ("There are ", .N, " non-standard (200) query_status_code in addition to any 'bad_request' flags")]
+    ## Ignore '' since this will happen when api_credits runs out mid-iteration
+    DT.ret[query_status_code != 200 & transaction_id != 'bad_request' & query_status_code != '', if (.N) warning ("There are ", .N, " non-standard (200) query_status_code in addition to any 'bad_request' flags")]
 
     if (!is.null(colsToReturn) && is.character(colsToReturn) && !all(tolower(colsToReturn) == "all")) {
         if (any(colsToReturn %ni% names(DT.ret)))

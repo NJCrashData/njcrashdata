@@ -1,26 +1,36 @@
 
 if (FALSE) 
 {
+    cls(10)
 
     files <- dir(data.p(), recursive=TRUE, full=TRUE, pattern="\\.csv$")
-    files <- files[!grepl("join_ids_yielding_badrequests", files)]
+    files <- files[!grepl("join_ids_yielding_badrequests|scratch", files)]
     setattr(files, "names", basename(files))
 
-    ll.ret <- list()
+    ll.ret <- list(); cat("\n\n\n\n")
     for (i in seq(files)) {
         file_out <- files[[i]]
         nm <- basename(file_out)
         cat ("\n ---------------------- ", nm, " ---------------------------- \n")
         ll.ret[[nm]] <- geocode_tamu_read_file(file_out)
-        cat("\n")
     }
 
-    ll.ret <- lapply(files, geocode_tamu_read_file)
+    ll.ret <- ll.ret[!sapply(ll.ret, function(DT) all(is.na(DT[["latitude"]]) & DT[["match_type"]] != "bad_request"))]
+    ## Flatten
+    DT.geocode_with_tamu <- rbindlist(ll.ret)
+    DT.geocode_with_tamu <- DT.geocode_with_tamu[!(is.na(latitude) & match_type != "bad_request")]
+    DT.geocode_with_tamu <- unique(DT.geocode_with_tamu, by=NULL)
+    setnames(DT.geocode_with_tamu, "internal_id", "join_id")
+    setkeyIfNot(DT.geocode_with_tamu, join_id, verbose=FALSE)
+    jesusForData(DT.geocode_with_tamu)
+
+    DT.geocode_with_tamu[DT.geocode_with_tamu[, .N, by=join_id][N>1]]
+    DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
 }
 
+## If there is an issue with a text file, use this to troubleshoot
 if (FALSE) {
-
-    file_out <- files[["tamu_results_20150419_213155.csv"]]
+    file_out <- files[["tamu_results_20150419_230917.csv"]]
     fread(file_out, sep=",", header=FALSE)
     subl(file_out)
 }
@@ -29,8 +39,8 @@ geocode_tamu_read_file <- function(
     file_out
   , format="csv"
   , verbose=TRUE
-  , colsToReturn = c("latitude", "longitude", "match_type", "matched_location_type")
-  , bad_request_file = data.p("geocode_tamu_results", "join_ids_yielding_badrequests", ext="csv")
+  , colsToReturn = c("internal_id", "latitude", "longitude", "match_type", "matched_location_type")
+  , warn_bad = FALSE
   , ...
 ) {
 
@@ -58,17 +68,15 @@ geocode_tamu_read_file <- function(
 
     badRequests <- DT.ret$transaction_id == "bad_request"
     if (any(badRequests)) {
+        if (warn_bad)
         warning ("Bad requests for ", sum(badRequests), " of the addresses. These will be flagged with 'bad_request' for values in the fields 'transaction_id', 'match_type' & 'matched_location_type'")
         ## Write bad IDs to file
-        if (!file.exists(dirname(bad_request_file)))
-            dir.create(dirname(bad_request_file), recursive=TRUE, showWarnings=FALSE)
-        try(DT.ret[badRequests, write(x=internal_id, ncolumns=1, file=bad_request_file, append=TRUE, sep="\n")])
         ## set appropriate columns to "bad_request"
         DT.ret[badRequests, c("match_type", "matched_location_type") := "bad_request"]
     }
 
     ## Check for any non-200 status, other than the bad_request
-    DT.ret[query_status_code != 200 & transaction_id != 'bad_request', if (.N) warning ("There are ", .N, " non-standard (200) query_status_code in addition to any 'bad_request' flags")]
+    DT.ret[query_status_code != 200 & transaction_id != 'bad_request' & query_status_code != '', if (.N) warning ("There are ", .N, " non-standard (200) query_status_code in addition to any 'bad_request' flags")]
 
     if (!is.null(colsToReturn) && is.character(colsToReturn) && !all(tolower(colsToReturn) == "all")) {
         if (any(colsToReturn %ni% names(DT.ret)))
