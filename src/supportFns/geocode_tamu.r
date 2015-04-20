@@ -117,7 +117,7 @@ geocode_tamu <- function(
 
     
     ## string format for verbose output
-    fmt.iter <- sprintf("Querying TAMU API for addresses # %% %1$ii -%% %1$ii (of %%s total)", ceiling(log10(length(URLS))))
+    fmt.iter <- sprintf("Querying TAMU API for addresses # %% %1$ii -%% %1$ii (of %%s total)", 1+ceiling(log10(length(URLS))))
 
 
     ## Check available api_credits

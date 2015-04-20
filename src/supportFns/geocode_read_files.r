@@ -16,6 +16,7 @@ if (FALSE)
     }
 
     ll.ret <- ll.ret[!sapply(ll.ret, function(DT) all(is.na(DT[["latitude"]]) & DT[["match_type"]] != "bad_request"))]
+
     ## Flatten
     DT.geocode_with_tamu <- rbindlist(ll.ret)
     DT.geocode_with_tamu <- DT.geocode_with_tamu[!(is.na(latitude) & match_type != "bad_request")]
@@ -24,8 +25,8 @@ if (FALSE)
     setkeyIfNot(DT.geocode_with_tamu, join_id, verbose=FALSE)
     jesusForData(DT.geocode_with_tamu)
 
-    DT.geocode_with_tamu[DT.geocode_with_tamu[, .N, by=join_id][N>1]]
-    DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
+    # ## Merge
+    # DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
 }
 
 ## If there is an issue with a text file, use this to troubleshoot

@@ -4,6 +4,10 @@ DT.Pedestrians  <-  copy(ll_DT.Pedestrians  [[Cnty]])
 DT.Vehicles     <-  copy(ll_DT.Vehicles     [[Cnty]])
 DT.Accidents    <-  copy(ll_DT.Accidents    [[Cnty]])
 
+
+DT.Accidents    <-  rbindlist(copy(ll_DT.Accidents[c("Monmouth", "Essex")]))
+
+
 ## -------------------- DT.Drivers ----------------------------------
 
 ## Add a field for Driver details missing
@@ -118,8 +122,10 @@ if (FALSE) {
   # ## Query the TAMU API
   colsBringing <- c("latitude", "longitude", "match_type", "matched_location_type")
   DT.ret <- {
-    DT.Accidents[join_id %in% join_ids_with_poundsign , 
+    # DT.Accidents[join_id %in% join_ids_with_poundsign , 
     # DT.Accidents[Municipality_Code %in% c(34:35) & Year == 2013 , 
+    # 
+    DT.Accidents[is.na(latitude) & County == "MONMOUTH" & Year == 2013 & Municipality_Code %in% c(19, 41:46),
     # DT.Accidents[, 
       geocode_tamu(streetAddress = geo.streetAddress
                   , city = Municipality
@@ -131,7 +137,7 @@ if (FALSE) {
                   , check_states = FALSE
                   , folder = data.p("geocode_tamu_results", County[[1]])
                   , colsToReturn = c("internal_id", colsBringing)
-                  , iter_size = 75
+                  , iter_size = 201
                 )]
   }
 
@@ -165,5 +171,15 @@ if (FALSE)
 {
   loadFromJesus("DT.geocode_with_tamu", overwrite.ifexists=FALSE, dont.fail.ifexists=TRUE)
   stopifnot("join_id" %in% names(DT.geocode_with_tamu))
+  stopifnot(c("latitude", "longitude") %ni% names(DT.Accidents))
+  ## ELSE: 
+  ##     DT.Accidents[, (colsBringing) := NULL]
   DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
 }
+
+
+if ("latitude" %in% names(DT.Accidents)) {
+  DT.Acc_code <- DT.Accidents[!is.na(latitude)]
+  jesusForData(DT.Acc_code)
+}
+
