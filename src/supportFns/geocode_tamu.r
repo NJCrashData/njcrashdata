@@ -1,8 +1,8 @@
 options(tamu_geo.apikey="0c0ce600dda74d7dba29fd713602d05e")  # Uni
 options(tamu_geo.apikey="4dabd5979f144327b0c7f50bf95aed68")  # Personal, Gmail main
 options(tamu_geo.apikey="d52d68faa2154dc89c964ec4cee702bd")  # Personal, Gmail2
-options(tamu_geo.apikey="f295003c76924a5ebbed43d4ef9ce662")  # tester.rs.to01@gmail.com
 options(tamu_geo.apikey=c(NJCrashData="3a245f981d7c4f43917d9b2ea290013c"))  # NJCrashData@gmail.com
+options(tamu_geo.apikey="f295003c76924a5ebbed43d4ef9ce662")  # tester.rs.to01@gmail.com
 
 
 geocode_tamu <- function(
@@ -34,6 +34,11 @@ geocode_tamu <- function(
 
     require("RCurl")
     require("data.table")
+
+    if (!length(streetAddress) & !length(city) & !length(state) & !length(zip)) {
+        message("All address fields are zero-length. Are you done geocoding? Great Job!\nReturning NULL")
+        return(NULL)
+    }
 
     if (!is.null(colsToReturn) && !is.character(colsToReturn))
         warning ("colsToReturn should be a character vector or should be NULL")
@@ -76,6 +81,7 @@ geocode_tamu <- function(
     URLS <- paste0(base_url, Args_for_url)
     # URLS <- gsub(" ", "%20", URLS) ## TODO use sapply(..., URLencode)
     setattr(URLS, "names", Args_for_url)
+    URLS <- sapply(URLS, URLencode)
 
     ## ERROR CHECK:  Confirm that there is at least one URL created
     if (!length(URLS)) {
@@ -122,13 +128,15 @@ geocode_tamu <- function(
 
 
     ## Check available api_credits
-    api_credits <- get_available_credits_tamu(apikey=apikey)
-    if (api_credits == 0 && isTRUE(break_on_blank)) {
-        warning ("The given apikey has zero credits remaining before even starting api call.\nExiting and returning NULL", call.=FALSE)
-        return(NULL)
-    } else if (api_credits < length(URLS)) {
-        warning ("The given apikey has only ", formnumb(api_credits), " remaining credits -- less than the ", formnumb(length(URLS)), " calls to be made", call.=FALSE)
-    }
+    try({
+        api_credits <- get_available_credits_tamu(apikey=apikey)
+        if (api_credits == 0 && isTRUE(break_on_blank)) {
+            warning ("The given apikey has zero credits remaining before even starting api call.\nExiting and returning NULL", call.=FALSE)
+            return(NULL)
+        } else if (api_credits < length(URLS)) {
+            warning ("The given apikey has only ", formnumb(api_credits), " remaining credits -- less than the ", formnumb(length(URLS)), " calls to be made", call.=FALSE)
+        }
+    })
 
 
     for(i in seq(iter_starts)) {
@@ -137,9 +145,14 @@ geocode_tamu <- function(
         inds <- seq.int(from=start, to=end, by=1)
         URL_batch <- URLS[inds]
         internal_id_batch <- internal_id[inds]
-        verboseMsg(verbose, sprintf(fmt.iter, start, end, formnumb(length(URLS), round=FALSE)), minw=82)
+        verboseMsg(verbose, sprintf(fmt.iter, start, end, formnumb(length(URLS), round=FALSE)), minw=82, frmt="%H:%M:%S %Z", time=TRUE)
         ## Hit the API, request results
-        url_results <- getURL( gsub(" ", "%20", URL_batch) ) ## TODO use sapply(..., URLencode)
+        url_results <- try(getURL( gsub(" ", "%20", URL_batch) )) ## TODO use sapply(..., URLencode)
+        if (isErr(url_results)) {
+            warning("getURL() resulted in an error for the last batch. Exiting for loop. Sample URL:\n", tail(URL_batch, 1), call.=FALSE)
+            break
+        }
+
 
         ## CSV results issues unnecessary linebreak. 
         ## This line might cause an issue if returning JSON instead of CSV
@@ -165,9 +178,12 @@ geocode_tamu <- function(
         url_results <- paste0(internal_id_batch, url_results, ",", names(URL_batch))
         write(x=url_results, file=file_out, ncolumns=1, append=TRUE, sep="\n")
 
-        if (isTRUE(anyBlank) && !get_available_credits_tamu(apikey=apikey)) {
-            warning ("Out of api credits. Breaking out of for-loop")
-            break
+        if (isTRUE(anyBlank)) {
+            credits <- try(get_available_credits_tamu(apikey=apikey), silent=TRUE)
+            if (isErr(credits) || !credits) {
+                warning ("Out of api credits. Breaking out of for-loop", call.=FALSE)
+                break
+            }
         }
     }
 
@@ -177,7 +193,7 @@ geocode_tamu <- function(
 
     ## If fread fails, return the file name, so that user can attempt to troubleshoot
     if (inherits(DT.ret, "try-error")) {
-        warning ("Could not fread ", file_out, "   Returning file name")
+        warning ("Could not fread ", file_out, "   Returning file name", call.=FALSE)
         return(file_out)
     }
 
@@ -186,7 +202,7 @@ geocode_tamu <- function(
 
     badRequests <- DT.ret$transaction_id == "bad_request"
     if (any(badRequests)) {
-        warning ("Bad requests for ", sum(badRequests), " of the addresses. These will be flagged with 'bad_request' for values in the fields 'transaction_id', 'match_type' & 'matched_location_type'")
+        warning ("Bad requests for ", sum(badRequests), " of the addresses. These will be flagged with 'bad_request' for values in the fields 'transaction_id', 'match_type' & 'matched_location_type'", call.=FALSE)
         ## Write bad IDs to file
         if (!file.exists(dirname(bad_request_file)))
             dir.create(dirname(bad_request_file), recursive=TRUE, showWarnings=FALSE)
@@ -239,8 +255,9 @@ get_geocode_tamu_colnames <- function(census, censusYear, ...) {
     return(geocode_tamu_colnames)
 }
 
-get_available_credits_tamu <- function(apikey=getOption("tamu_geo.apikey")) {
+get_available_credits_tamu <- function(apikey=getOption("tamu_geo.apikey"), verbose=FALSE) {
     URL <- paste0("https://geoservices.tamu.edu/UserServices/Payments/Balance/AccountBalanceWebServiceHttp.aspx?version=1.0&apikey=",apikey,"&format=csv")
+    verboseMsg(verbose, "Querying API using address\n     ", URL, "\n", time=FALSE)
     ret <- RCurl::getURL(URL)
     as.integer(strsplit(ret, ",")[[c(1, 2)]])
 }
@@ -416,4 +433,15 @@ geocode_google <- function(
     return (DT.ret)
 }
 
+
+
+# keys <- c(
+#   "0c0ce600dda74d7dba29fd713602d05e"
+# , "4dabd5979f144327b0c7f50bf95aed68"
+# , "d52d68faa2154dc89c964ec4cee702bd"
+# , "f295003c76924a5ebbed43d4ef9ce662"
+# , "3a245f981d7c4f43917d9b2ea290013c"
+# )
+# selfname_(keys)
+# sapply(keys, get_available_credits_tamu)
 

@@ -1,32 +1,42 @@
 
-if (FALSE) 
-{
-    cls(10)
+read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "longitude", "match_type", "matched_location_type"), verbose=TRUE) {
 
-    files <- dir(data.p(), recursive=TRUE, full=TRUE, pattern="\\.csv$")
+    if (any(colsToBring %in% names(DT)))
+        stop ("Some values of colsToBring are already in DT\n\nHINT Run:    DT.Accidents[, (colsBringing) := NULL]")
+
+    files <- dir(data.p("geocode_tamu_results"), recursive=TRUE, full=TRUE, pattern="\\.csv$")
     files <- files[!grepl("join_ids_yielding_badrequests|scratch", files)]
     setattr(files, "names", basename(files))
+    verboseMsg(TRUE, "reading", length(files), "files", minw=88)
 
-    ll.ret <- list(); cat("\n\n\n\n")
+    ll.ret <- list()
     for (i in seq(files)) {
         file_out <- files[[i]]
         nm <- basename(file_out)
-        cat ("\n ---------------------- ", nm, " ---------------------------- \n")
-        ll.ret[[nm]] <- geocode_tamu_read_file(file_out)
+        ll.ret[[nm]] <- geocode_tamu_read_file(file_out, verbose=verbose)
     }
 
     ll.ret <- ll.ret[!sapply(ll.ret, function(DT) all(is.na(DT[["latitude"]]) & DT[["match_type"]] != "bad_request"))]
 
     ## Flatten
     DT.geocode_with_tamu <- rbindlist(ll.ret)
+
+    ## ERROR CHECK
+    if (!nrow(DT.geocode_with_tamu) || "latitude" %ni% names(DT.geocode_with_tamu))
+        stop ("Internal error.  DT.geocode_with_tamu did not process correctly")
+
     DT.geocode_with_tamu <- DT.geocode_with_tamu[!(is.na(latitude) & match_type != "bad_request")]
     DT.geocode_with_tamu <- unique(DT.geocode_with_tamu, by=NULL)
     setnames(DT.geocode_with_tamu, "internal_id", "join_id")
     setkeyIfNot(DT.geocode_with_tamu, join_id, verbose=FALSE)
-    jesusForData(DT.geocode_with_tamu)
 
-    # ## Merge
-    # DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
+    file_jesus <- jesusForData(DT.geocode_with_tamu, envir=environment(), verbose=FALSE)
+
+    if (!any(colsToBring %in% names(DT))) {
+      addColsFrom_(DT.receiving=DT, DT.giving=DT.geocode_with_tamu, colsToBring=colsToBring, joinCols="join_id")
+    }
+
+    return(invisible(DT))
 }
 
 ## If there is an issue with a text file, use this to troubleshoot
@@ -48,6 +58,8 @@ geocode_tamu_read_file <- function(
 ## DEPENDS ON:   collectArgs;  removeNA;  %ni%;  data.p; verboseMsg; formnumb
 
     require("data.table")
+
+    verboseMsg(verbose, "Processing '", path.unexpand(file_out), "'", sep="", time=FALSE)
 
     if (!is.null(colsToReturn) && !is.character(colsToReturn))
         warning ("colsToReturn should be a character vector or should be NULL")
@@ -85,8 +97,6 @@ geocode_tamu_read_file <- function(
         else
             DT.ret <- DT.ret[, colsToReturn, with=FALSE]
     }
-
-    verboseMsg(verbose, "API results written to  \"", file_out, "\"    ", minw=82, sep="")
 
     return(DT.ret)
 }

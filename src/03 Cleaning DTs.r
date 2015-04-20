@@ -5,7 +5,17 @@ DT.Vehicles     <-  copy(ll_DT.Vehicles     [[Cnty]])
 DT.Accidents    <-  copy(ll_DT.Accidents    [[Cnty]])
 
 
+## TEMP -- using Monmouth & Essex Country
 DT.Accidents    <-  rbindlist(copy(ll_DT.Accidents[c("Monmouth", "Essex")]))
+setkeyIfNot(DT.Accidents, "join_id", superset.ok=TRUE)
+
+## --------------- PARSING JOIN CO
+verboseMsg(verbose, "Parsing Join Columns For all DTs")
+addParsedjoin_id_(DT.Drivers)
+addParsedjoin_id_(DT.Occupants)
+addParsedjoin_id_(DT.Pedestrians)
+addParsedjoin_id_(DT.Vehicles)
+addParsedjoin_id_(DT.Accidents)
 
 
 ## -------------------- DT.Drivers ----------------------------------
@@ -15,14 +25,14 @@ DT.Drivers
 
 ## -------------------- DT.Accidents ----------------------------------
 verboseMsg(verbose, "   -------    BEGINNING DT.Accidents   -------  ")
-verboseMsg(verbose, "Parsing Join Column")
-DT.Accidents[, c("Year", "County_Code", "Municipality_Code", "Department_Case_Number") := 
-                  list( as.numeric(trim(substr(join_id, 1, 4)))
-                      , as.numeric(trim(substr(join_id, 5, 6)))
-                      , as.numeric(trim(substr(join_id, 7, 8)))
-                      ,           (trim(substr(join_id, 9, 31)))
-                      )
-            ]
+# verboseMsg(verbose, "Parsing Join Column")
+# DT.Accidents[, c("Year", "County_Code", "Municipality_Code", "Department_Case_Number") := 
+#                   list( as.numeric(trim(substr(join_id, 1, 4)))
+#                       , as.numeric(trim(substr(join_id, 5, 6)))
+#                       , as.numeric(trim(substr(join_id, 7, 8)))
+#                       ,           (trim(substr(join_id, 9, 31)))
+#                       )
+#             ]
 
 ## Set blanks to NA
 for (col in names(DT.Accidents)) {
@@ -55,10 +65,13 @@ stopifnot(DT.Accidents[, !is.na(day_of_crash) & day_of_crash %in% weekdays(today
 
 
 ## Identify columns that are factors not numbers
-cols.factorNotNumber <- c("Police_Dept_Code", "Police_Station", "Crash_Type_Code", "Route", "Route_Suffix", "route_id_SRI", "Road_System", "Road_Character", "Road_Surface_Type", "Surface_Condition", "Light_Condition", "Environmental_Condition", "Road_Divided_By", "Temporary_Traffic_Control_Zone", "Unit_Of_Measurement",  "Is_Ramp", "Ramp_To_or_From_Route_Name", "Ramp_To_or_From_Route_Direction", "Posted_Speed_Cross_Street", "Posted_Speed", "Latitude", "Longitude", "cell_phone_in_use", "Other_Property_Damage", "badge_numb", "County_Code", "Municipality_Code", "Department_Case_Number")
+cols.factorNotNumber <- c("Police_Dept_Code", "Police_Station", "Crash_Type_Code", "Route", "Route_Suffix", "route_id_SRI", "Road_System", "Road_Character", "Road_Surface_Type", "Surface_Condition", "Light_Condition", "Environmental_Condition", "Road_Divided_By", "Temporary_Traffic_Control_Zone", "Unit_Of_Measurement",  "Is_Ramp", "Ramp_To_or_From_Route_Name", "Ramp_To_or_From_Route_Direction", "Posted_Speed_Cross_Street", "Posted_Speed", "Latitude", "Longitude", "cell_phone_in_use", "Other_Property_Damage", "badge_numb", "County_Code", "Municipality_Code", "Department_Case_Number", "County", "Municipality", "Police_Department")
 
 ## Columns that are deffinitely numbers
 cols.numbers <- c("MilePost", "Distance_To_Cross_Street")
+
+## Columns that need basic string cleaning
+cols.charsToClean <- c("location_of_crash", "Cross_Street_Name", "location_direction", "Directn_From_Cross_Street")
 
 ## Clean up badge number
 DT.Accidents[, badge_numb := trim(gsub("\\#", "", badge_numb))]
@@ -71,7 +84,12 @@ for (col in cols.numbers)
 ## clean up numerics
 verboseMsg(verbose, "Converting factor columns")
 for (col in cols.factorNotNumber)
-  DT.Accidents[, (col) := factor(trim(as.character(get(col))))]
+  DT.Accidents[, (col) := factor(basicStringCleaning(get(col)))]
+
+verboseMsg(verbose, "Cleaning character columns")
+for (col in cols.charsToClean)
+  DT.Accidents[, (col) := basicStringCleaning(get(col))]
+
 
 ## Confirm that all time_of_crash is exactly 4 digits long
 if (!all(4 == nchar(DT.Accidents[!is.na(time_of_crash), time_of_crash])))
@@ -87,26 +105,21 @@ DT.Accidents[is.na(time_of_crash), list(date_of_crash, time_of_crash, datetime_o
 ## Create streetAddress using location and cross street
 ## TODO: Incorporate ramp information, distance, etc
 pat_to_not_include <- "(Parking|lot|deck|garage|Priv*Property)"
-DT.Accidents[, geo.include_cross_st := !is.na(Cross_Street_Name) & !grepl(pat_to_not_include, Cross_Street_Name, ignore.case=TRUE)]
-DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(geo.include_cross_st, "", paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
+    ## Check if has street number
+DT.Accidents[, geo.has_street_number := grepl("^\\s*\\d", location_of_crash)]
+    ## Check if Cross_Street_Name is valid and that street has no number
+DT.Accidents[, geo.include_cross_st := !is.na(Cross_Street_Name) & !grepl(pat_to_not_include, Cross_Street_Name, ignore.case=TRUE) & !geo.has_street_number]
+DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(geo.include_cross_st, no="", yes=paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
 
 
 ## Some basic cleaning
-DT.Accidents[, geo.streetAddress := gsub("(SH|HWY)\\s*#", "STATE HIGHWAY ", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("(RT|ROUTE|RTE)\\s*#", "RT ", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("(\\\"|')([A-Za-z])(\\\"|')", "\\2", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("LAKEWOOD F'DALE", "LAKEWOOD FARMINGDALE", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("DUNKIN'\\s*DONUTS", "DUNKING DONUTS", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("PARK'G", "PARKING", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("WOODS'", "WOODS", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("O'HAGEN", "OHAGEN", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("*18' ", "18 ", geo.streetAddress)]
-DT.Accidents[, geo.streetAddress := gsub("'(S|s)(\\s|\\)|\\b)", "\\1\\2", geo.streetAddress)]
+DT.Accidents[, geo.streetAddress := clean_streetAddress(geo.streetAddress, drop_parkingLots=TRUE)]
 ## SHOW
 DT.Accidents[grepl("'", geo.streetAddress) & !grepl("'S", geo.streetAddress)]
 
 ## Confirm that no NAs where introduced
-tmp_NAs.new <- is.na(DT.Accidents[, names(DT.Accidents) %ni% c("datetime_of_crash", "geo.streetAddress"), with=FALSE])
+colsAdded <- c("datetime_of_crash", "geo.include_cross_st", "geo.has_street_number", "geo.streetAddress")
+tmp_NAs.new <- is.na(DT.Accidents[, names(DT.Accidents) %ni% colsAdded, with=FALSE])
 if (any(tmp_NAs != tmp_NAs.new)) {
     cols_with_NAs_introduced <- colnames(tmp_NAs)[sapply(seq.int(ncol(tmp_NAs)), function(i) any(tmp_NAs[, i] != tmp_NAs.new[, i]))]
     warning(warningCols("The following columns had NAs introduced ", cols_with_NAs_introduced))
@@ -124,14 +137,25 @@ if (FALSE) {
 ## --------------------------- ##
 ##        Using TAMU           ##
 ## --------------------------- ##
+
+## Add in previously processed Lat/Lng Data
+{
+  try(cat("Available Credits : ", get_available_credits_tamu(), "\n"))
+  if ("latitude" %in% names(DT.Accidents))
+    message("Current number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
+  colsToBring <- c("latitude", "longitude", "match_type", "matched_location_type")
+  invisible(suppressWarnings(DT.Accidents[, (colsBringing) := NULL]))
+  read_all_tamu_files_and_add_to_DT_(DT=DT.Accidents, colsToBring=colsToBring, verbose=FALSE)
+  message("Updated number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
+}
+
 if (FALSE) {
   # ## Query the TAMU API
-  colsBringing <- c("latitude", "longitude", "match_type", "matched_location_type")
   DT.ret <- {
     # DT.Accidents[join_id %in% join_ids_with_poundsign , 
     # DT.Accidents[Municipality_Code %in% c(34:35) & Year == 2013 , 
     # 
-    DT.Accidents[is.na(latitude) & County == "MONMOUTH" & Year == 2013 & Municipality_Code %in% c(19, 41:46),
+    DT.Accidents[is.na(latitude) & County == "MONMOUTH" & Year == 2013,
     # DT.Accidents[, 
       geocode_tamu(streetAddress = geo.streetAddress
                   , city = Municipality
@@ -142,17 +166,17 @@ if (FALSE) {
                   , format = "csv"
                   , check_states = FALSE
                   , folder = data.p("geocode_tamu_results", County[[1]])
-                  , colsToReturn = c("internal_id", colsBringing)
-                  , iter_size = 201
+                  , colsToReturn = c("internal_id", colsToBring)
+                  , iter_size = 35
                 )]
   }
 
   DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
   if (is.data.table(DT.ret) && identical(DT.ret[["internal_id"]], DT.Accidents[["join_id"]])) {
-      if (any(colsBringing %in% names(DT.Accidents)))
-        warning ("Some columns in colsBringing is/are already in DT.Accidents --- DT.ret NOT brought over")
+      if (any(colsToBring %in% names(DT.Accidents)))
+        warning ("Some columns in colsToBring is/are already in DT.Accidents --- DT.ret NOT brought over")
       else 
-        DT.Accidents[, colsBringing := DT.ret[, !"internal_id", with=FALSE] ]
+        DT.Accidents[, colsToBring := DT.ret[, !"internal_id", with=FALSE] ]
   } else {
     ## May not be data.table
       warning ("DT.ret did not have the correct internal_id values. Try merging")
@@ -172,7 +196,7 @@ if (FALSE) {
                   , zip = NULL
                   , internal_id=join_id
                   , folder = data.p("geocode_ggmap_results", County[[1]])
-                  , colsToReturn = c("internal_id", colsBringing)
+                  , colsToReturn = c("internal_id", colsToBring)
                   , iter_size = 201
                 )]
   }
@@ -188,7 +212,7 @@ if (FALSE)
   stopifnot("join_id" %in% names(DT.geocode_with_tamu))
   stopifnot(c("latitude", "longitude") %ni% names(DT.Accidents))
   ## ELSE: 
-  ##     DT.Accidents[, (colsBringing) := NULL]
+  ##     DT.Accidents[, (colsToBring) := NULL]
   DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
 }
 

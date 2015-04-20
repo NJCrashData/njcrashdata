@@ -1,7 +1,7 @@
 ## OUTPUT DT to file to batch process. But that still has the same limit
 output_accidents_to_csv <- function(
       DT = get("DT.Accidents", envir=globalenv())
-    , addlcols = c("datetime_of_crash", "day_of_crash", "date_of_crash", "Alcohol_Involved") 
+    , addlcols = c("datetime_of_crash", "day_of_crash", "date_of_crash", "Alcohol_Involved")
 
     , append = FALSE
     , fileEncoding = ""
@@ -24,8 +24,20 @@ output_accidents_to_csv <- function(
     if (!file.exists(dirname(file_out)))
         dir.create(dirname(file_out), recursive=TRUE)
 
-    write.table(x=DT, file=file_out, append = append, sep = file_sep, row.names=FALSE, col.names=TRUE, fileEncoding=fileEncoding)
+    ## Create string for j expression
+    names(addlcols) <- colNamesFromVector(addlcols)
+    jCols <- c(unique_id='join_id', streetAddress='geo.streetAddress', city='Municipality', state='"NJ"', addlcols)
+    j_as_string <- sprintf("list(%s)", paste(sprintf("%s=%s", names(jCols), jCols), collapse=", "))
 
+    ## Write to file
+    write.table(x=
+            DT[
+            # i=TRUE
+            , j = eval(parse(text=j_as_string))
+            ]
+        , file=file_out, append = append, sep = file_sep, row.names=FALSE, col.names=TRUE, fileEncoding=fileEncoding)
+
+    ## Verbose to user
     verboseMsg(verbose, sprintf("DT written to  '%s'  total size is %s\n", file_out, formatBytes(file.info(file_out)$size)))
 
     return(invisible(file_out))

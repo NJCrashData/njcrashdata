@@ -1,4 +1,5 @@
 setProject(proj="NJCrashData", create=TRUE, subl=FALSE, load=FALSE)
+# fresh(); setProject(proj="NJCrashData", create=TRUE, subl=FALSE, load=TRUE)
 
 ## The first year to be ingested and parsed.  (All years are downloaded)
 minYear <- 2011
