@@ -20,32 +20,6 @@ for (col in geoCols) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-## Create streetAddress using location and cross street
-## TODO: Incorporate ramp information, distance, etc
-DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(is.na(Cross_Street_Name), "", paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
-
-
-## Query the TAMU API
-DT.ret <- {
-  DT.Accidents[, 
-    geocode_tamu(streetAddress = geo.streetAddress
-                , city = Municipality
-                , state = "NJ"
-                , zip = NULL
-                , internal_id=join_id
-                , apikey = getOption("tamu_geo.apikey")
-                , format = "csv"
-                , check_states = FALSE
-                , folder = data.p("geocode_tamu_results", County[[1]])
-                , colsToReturn = c("latitude", "longitude", "match_type", "matched_location_type")
-                )]
-}
-
-    DT.Temp[, names(DT.ret) := DT.ret]
-    DT.ret
-}
-
-
 
 
 http://geoservices.tamu.edu/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V04_01.aspx?

@@ -147,11 +147,11 @@ if (FALSE) {
 
 ## Add in previously processed Lat/Lng Data
 {
-  try(cat("Available Credits : ", get_available_credits_tamu(), "\n"))
+  try(cat("Available Credits : ", get_available_credits_tamu(), "\n"), silent=TRUE)
   if ("latitude" %in% names(DT.Accidents))
     message("Current number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
   colsToBring <- c("latitude", "longitude", "match_type", "matched_location_type")
-  invisible(suppressWarnings(DT.Accidents[, (colsBringing) := NULL]))
+  invisible(suppressWarnings(DT.Accidents[, (colsToBring) := NULL]))
   read_all_tamu_files_and_add_to_DT_(DT=DT.Accidents, colsToBring=colsToBring, verbose=FALSE)
   message("Updated number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
 }
@@ -212,16 +212,16 @@ if (FALSE) {
 }
 
 
-## ALTERNATE FOR ADDING THE DATA BACK IN
-if (FALSE) 
-{
-  loadFromJesus("DT.geocode_with_tamu", overwrite.ifexists=FALSE, dont.fail.ifexists=TRUE)
-  stopifnot("join_id" %in% names(DT.geocode_with_tamu))
-  stopifnot(c("latitude", "longitude") %ni% names(DT.Accidents))
-  ## ELSE: 
-  ##     DT.Accidents[, (colsToBring) := NULL]
-  DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
-}
+# OLD:    ## ALTERNATE FOR ADDING THE DATA BACK IN
+# OLD:    if (FALSE) 
+# OLD:    {
+# OLD:      loadFromJesus("DT.geocode_with_tamu", overwrite.ifexists=FALSE, dont.fail.ifexists=TRUE)
+# OLD:      stopifnot("join_id" %in% names(DT.geocode_with_tamu))
+# OLD:      stopifnot(c("latitude", "longitude") %ni% names(DT.Accidents))
+# OLD:      ## ELSE: 
+# OLD:      ##     DT.Accidents[, (colsToBring) := NULL]
+# OLD:      DT.Accidents <- merge(DT.Accidents, DT.geocode_with_tamu, by="join_id", all.x=TRUE, all.y=FALSE)
+# OLD:    }
 
 
 ## --------------------------- ##
