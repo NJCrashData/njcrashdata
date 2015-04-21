@@ -1,27 +1,32 @@
-DT.Drivers      <-  copy(ll_DT.Drivers      [[Cnty]])
-DT.Occupants    <-  copy(ll_DT.Occupants    [[Cnty]])
-DT.Pedestrians  <-  copy(ll_DT.Pedestrians  [[Cnty]])
-DT.Vehicles     <-  copy(ll_DT.Vehicles     [[Cnty]])
-DT.Accidents    <-  copy(ll_DT.Accidents    [[Cnty]])
+if (exists("ll_DT.Accidents")) {
+  DT.Drivers      <-  copy(ll_DT.Drivers      [[Cnty]])
+  DT.Occupants    <-  copy(ll_DT.Occupants    [[Cnty]])
+  DT.Pedestrians  <-  copy(ll_DT.Pedestrians  [[Cnty]])
+  DT.Vehicles     <-  copy(ll_DT.Vehicles     [[Cnty]])
+  DT.Accidents    <-  copy(ll_DT.Accidents    [[Cnty]])
 
 
-## TEMP -- using Monmouth & Essex Country
-DT.Accidents    <-  rbindlist(copy(ll_DT.Accidents[c("Monmouth", "Essex")]))
-setkeyIfNot(DT.Accidents, "join_id", superset.ok=TRUE)
+  ## --------------- PARSING JOIN CO
+  verboseMsg(verbose, "Parsing Join Columns For all DTs")
+  addParsedjoin_id_(DT.Drivers)
+  addParsedjoin_id_(DT.Occupants)
+  addParsedjoin_id_(DT.Pedestrians)
+  addParsedjoin_id_(DT.Vehicles)
+  addParsedjoin_id_(DT.Accidents)
 
-## --------------- PARSING JOIN CO
-verboseMsg(verbose, "Parsing Join Columns For all DTs")
-addParsedjoin_id_(DT.Drivers)
-addParsedjoin_id_(DT.Occupants)
-addParsedjoin_id_(DT.Pedestrians)
-addParsedjoin_id_(DT.Vehicles)
-addParsedjoin_id_(DT.Accidents)
+
+} else {
+    loadFromJesus("DT.Accidents_ESSEX_MONMOUTH", over=TRUE)
+    DT.Accidents <- DT.Accidents_ESSEX_MONMOUTH
+    rm(DT.Accidents_ESSEX_MONMOUTH)
+}
+
 
 
 ## -------------------- DT.Drivers ----------------------------------
 
 ## Add a field for Driver details missing
-DT.Drivers
+# DT.Drivers
 
 ## -------------------- DT.Accidents ----------------------------------
 verboseMsg(verbose, "   -------    BEGINNING DT.Accidents   -------  ")
@@ -123,6 +128,8 @@ tmp_NAs.new <- is.na(DT.Accidents[, names(DT.Accidents) %ni% colsAdded, with=FAL
 if (any(tmp_NAs != tmp_NAs.new)) {
     cols_with_NAs_introduced <- colnames(tmp_NAs)[sapply(seq.int(ncol(tmp_NAs)), function(i) any(tmp_NAs[, i] != tmp_NAs.new[, i]))]
     warning(warningCols("The following columns had NAs introduced ", cols_with_NAs_introduced))
+} else {
+  rm(tmp_NAs, tmp_NAs.new)
 }
 
 
