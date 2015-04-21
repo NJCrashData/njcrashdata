@@ -2,7 +2,7 @@
 read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "longitude", "match_type", "matched_location_type"), verbose=TRUE) {
 
     if (any(colsToBring %in% names(DT)))
-        stop ("Some values of colsToBring are already in DT\n\nHINT Run:    DT.Accidents[, (colsBringing) := NULL]")
+        stop ("Some values of colsToBring are already in DT\n\nHINT Run:    DT.Accidents[, (colsToBring) := NULL]")
 
     files <- dir(data.p("geocode_tamu_results"), recursive=TRUE, full=TRUE, pattern="\\.csv$")
     files <- files[!grepl("join_ids_yielding_badrequests|scratch", files)]
