@@ -28,6 +28,7 @@ output_accidents_to_csv <- function(
     names(addlcols) <- colNamesFromVector(addlcols)
     location <- 'paste(geo.streetAddress, Municipality, "NJ", sep=",")'
     jCols <- c(unique_id='join_id', location=location, streetAddress='geo.streetAddress', city='Municipality', state='"NJ"', addlcols)
+    jCols <- c(unique_id='join_id', location=location, addlcols)
     j_as_string <- sprintf("list(%s)", paste(sprintf("%s=%s", names(jCols), jCols), collapse=", "))
     # cat("\n\n", j_as_string, "\n\n")
 

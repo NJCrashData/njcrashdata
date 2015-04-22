@@ -3,8 +3,16 @@ clean_streetAddress <- function(streetAddress, drop_parkingLots=TRUE) {
 
   ## Clean quotes
   streetAddress <- removeDuplicateChars(streetAddress)
+
   ## Remove quotes around single letter
   streetAddress <- gsub("(\\\"|')([A-Za-z])(\\\"|')", "\\2", streetAddress)
+
+  ## Remove pound signs
+  streetAddress <- gsub("(\\s*#\\s*)+", " ", streetAddress)
+
+  ## Remove anything following a semicolon
+  streetAddress <- gsub(";.*$", "", streetAddress)
+
 
   streetAddress <- gsub("(SH|HWY)\\s*#", "STATE HIGHWAY ", streetAddress)
   streetAddress <- gsub("(RT|ROUTE|RTE)\\s*#", "RT ", streetAddress)

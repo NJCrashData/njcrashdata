@@ -154,16 +154,25 @@ if (FALSE) {
   invisible(suppressWarnings(DT.Accidents[, (colsToBring) := NULL]))
   read_all_tamu_files_and_add_to_DT_(DT=DT.Accidents, colsToBring=colsToBring, verbose=FALSE)
   message("Updated number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
+
+  cat("Approx ", DT.Accidents[is.na(match_type), formnumb(.N)] , "left to geocode   and    ",DT.Accidents[(match_type == "bad_request" & !is.na(match_type)), formnumb(.N)], " with bad_request\n")
+  # DT.Accidents[is.na(latitude) & is.na(match_type), .N, keyby=list(County, Year, Above_Split = as.num.as.char(Municipality_Code) > MunSplit)]
+  DT.Accidents[is.na(match_type), .N, keyby=list(County, Year)]
+
 }
 
-if (FALSE) {
-  # ## Query the TAMU API
+
+if (FALSE) 
+{
+
+  if ("match_type" %ni% names(DT.ret))
+    match_type <- NA
+
+  ### Query the TAMU API
   DT.ret <- {
-    # DT.Accidents[join_id %in% join_ids_with_poundsign , 
-    # DT.Accidents[Municipality_Code %in% c(34:35) & Year == 2013 , 
-    # 
-    DT.Accidents[is.na(latitude) & County == "MONMOUTH" & Year == 2013,
-    # DT.Accidents[, 
+    # DT.Accidents[ 
+    DT.Accidents[is.na(match_type)
+    ,
       geocode_tamu(streetAddress = geo.streetAddress
                   , city = Municipality
                   , state = "NJ"

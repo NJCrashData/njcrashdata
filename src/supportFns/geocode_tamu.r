@@ -35,7 +35,7 @@ geocode_tamu <- function(
     require("RCurl")
     require("data.table")
 
-    if (!length(streetAddress) & !length(city) & !length(state) & !length(zip)) {
+    if (!length(streetAddress) & !length(city) & !length(zip) & !(length(state) > 1)) {
         message("All address fields are zero-length. Are you done geocoding? Great Job!\nReturning NULL")
         return(NULL)
     }
@@ -77,7 +77,7 @@ geocode_tamu <- function(
     Args_for_url <- collectArgs(except=c("Args", non_api_args), incl.dots=TRUE)
     Args_for_url <- Args_for_url[!sapply(Args_for_url, is.null)]
     Args_for_url <- sapply(names(Args_for_url), function(nm) paste0(nm, "=", Args_for_url[[nm]]))
-    Args_for_url <- do.call(paste, c(Args_for_url, sep="&"))
+    Args_for_url <- do.call(paste, c(as.list(Args_for_url), sep="&"))
     URLS <- paste0(base_url, Args_for_url)
     # URLS <- gsub(" ", "%20", URLS) ## TODO use sapply(..., URLencode)
     setattr(URLS, "names", Args_for_url)
@@ -96,7 +96,7 @@ geocode_tamu <- function(
     if (!is.null(internal_id)) {
         L.id <- length(internal_id)
         if (L.id > 1 && L.id != length(URLS)) {
-            warning (sprintf("differing lengths between internal_id (%i) and rows of DT.ret (%i)\ninternal_id will not be used"), L.id, nrows(DT.ret))
+            warning (sprintf("differing lengths between internal_id (%i) and rows of DT.ret (%i)\ninternal_id will not be used"), L.id, nrow(DT.ret))
             internal_id <- NULL
         } else {
             internal_id <- paste0(removeNA(internal_id, replace=""), ",")
@@ -138,7 +138,7 @@ geocode_tamu <- function(
         }
     })
 
-
+    handle <- getCurlHandle()
     for(i in seq(iter_starts)) {
         start <- iter_starts[[i]]
         end   <- iter_ends  [[i]]
@@ -147,7 +147,8 @@ geocode_tamu <- function(
         internal_id_batch <- internal_id[inds]
         verboseMsg(verbose, sprintf(fmt.iter, start, end, formnumb(length(URLS), round=FALSE)), minw=82, frmt="%H:%M:%S %Z", time=TRUE)
         ## Hit the API, request results
-        url_results <- try(getURL( gsub(" ", "%20", URL_batch) )) ## TODO use sapply(..., URLencode)
+        # sans URLencode :: url_results <- try(getURL( gsub(" ", "%20", URL_batch), curl=handle )) ## TODO use sapply(..., URLencode)
+        url_results <- try( getURL(url=URL_batch, curl=handle, async=FALSE) ) ## TODO use sapply(..., URLencode)
         if (isErr(url_results)) {
             warning("getURL() resulted in an error for the last batch. Exiting for loop. Sample URL:\n", tail(URL_batch, 1), call.=FALSE)
             break
