@@ -1,4 +1,4 @@
-ingest_report_type <- function(Type, minYear=2006, nj=FALSE)
+ingest_report_type <- function(Type, minYear=2006, NJ=FALSE, Counties=getCounties(NJ.included=NJ))
 {
 
   ## -------------------------------------------------------------- ##
@@ -8,9 +8,6 @@ ingest_report_type <- function(Type, minYear=2006, nj=FALSE)
 
   if (minYear < 2006)
     warning ("The NJTR-1 form changed from 2005 to 2006. Data may not clean correctly")
-
-  if (!isTRUE(nj))
-    Counties <- Counties[Counties != "NewJersey"]
 
   cat (sprintf("  %20s[ %s ] \n", "", Type))
   ll_DT.counties <- emptylist(Counties)
