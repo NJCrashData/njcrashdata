@@ -18,7 +18,7 @@ files.info[, file := files]
 setkeyIfNot(files.info,  c("year", "county", "report_type"), organize=TRUE, verbose=FALSE)
 kCols.yc <- c("year", "county")
 
-Counties <- files.info[, unique(county)]
+Counties <- getCounties(NJ.included=FALSE)
 Report_Types <- files.info[, unique(report_type)]
 
 ## Confrim that we have each report type per group
@@ -29,11 +29,11 @@ stopifnot(files.info[, lapply(Report_Types,  "%in%", report_type), by=kCols.yc][
 
 
 
-ll_DT.Drivers     <- ingest_report_type("Drivers",     minYear=minYear,  nj=FALSE)
-ll_DT.Occupants   <- ingest_report_type("Occupants",   minYear=minYear,  nj=FALSE)
-ll_DT.Pedestrians <- ingest_report_type("Pedestrians", minYear=minYear,  nj=FALSE)
-ll_DT.Vehicles    <- ingest_report_type("Vehicles",    minYear=minYear,  nj=FALSE)
-ll_DT.Accidents   <- ingest_report_type("Accidents",   minYear=minYear,  nj=FALSE)
+ll_DT.Drivers     <- ingest_report_type("Drivers",     minYear=minYear,  NJ=FALSE)
+ll_DT.Occupants   <- ingest_report_type("Occupants",   minYear=minYear,  NJ=FALSE)
+ll_DT.Pedestrians <- ingest_report_type("Pedestrians", minYear=minYear,  NJ=FALSE)
+ll_DT.Vehicles    <- ingest_report_type("Vehicles",    minYear=minYear,  NJ=FALSE)
+ll_DT.Accidents   <- ingest_report_type("Accidents",   minYear=minYear,  NJ=FALSE)
 
 ## All of the main join_id from ll_DT.Accidents
 DT.join_ids <- lapply(ll_DT.Accidents, function(DT) DT[, list(join_id=unique(join_id))])
