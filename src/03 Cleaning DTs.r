@@ -157,7 +157,8 @@ if (FALSE) {
 
   cat("Approx ", DT.Accidents[is.na(match_type), formnumb(.N)] , "left to geocode   and    ",DT.Accidents[(match_type == "bad_request" & !is.na(match_type)), formnumb(.N)], " with bad_request\n")
   # DT.Accidents[is.na(latitude) & is.na(match_type), .N, keyby=list(County, Year, Above_Split = as.num.as.char(Municipality_Code) > MunSplit)]
-  .dash <- "------"; rbind(DT.Accidents[is.na(match_type), .N, keyby=list(County, Year)], data.table(County=c(.dash,"TOTAL"), Year=c(.dash,"TOTAL"), N=c(.dash,DT.Accidents[is.na(match_type), .N])) )[N != .dash, N := formnumb(as.numeric(N), round=TRUE)][]
+  .dash <- "------"; 
+  rbind(DT.Accidents[is.na(match_type), .N, keyby=list(County, Year)], data.table(County=c(.dash,"TOTAL"), Year=c(.dash,"TOTAL"), N=c(.dash,DT.Accidents[is.na(match_type), .N])) )[N != .dash, N := formnumb(as.numeric(N), round=TRUE)][]
 }
 
 
@@ -181,7 +182,7 @@ if (FALSE)
                   , check_states = FALSE
                   , folder = data.p("geocode_tamu_results", County[[1]])
                   , colsToReturn = c("internal_id", colsToBring)
-                  , iter_size = 35
+                  , iter_size = 150
                 )]
   }
 
