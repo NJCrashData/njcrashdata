@@ -20,7 +20,6 @@ read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "lo
 
     ## Flatten
     DT.geocode_with_tamu <- rbindlist(ll.ret)
-
     ## ERROR CHECK
     if (!nrow(DT.geocode_with_tamu) || "latitude" %ni% names(DT.geocode_with_tamu))
         stop ("Internal error.  DT.geocode_with_tamu did not process correctly")
@@ -30,14 +29,38 @@ read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "lo
     setnames(DT.geocode_with_tamu, "internal_id", "join_id")
     setkeyIfNot(DT.geocode_with_tamu, join_id, verbose=FALSE)
 
-    ## Check for Duplicate values of join_id
+
+    ## Handle Duplicate values of join_id
+    ## -----------------------------------
+    ## Note that straight-duplicates (ie, having exact identical information) were cleared up above
+    ## Remaining duplicates per id have differing data.
+    ## If the geo data is NA for any of the dups, simply remove those
+    ## If duplicates remain (ie, a single join_id has different lat/lng data)
+    ##     then this needs manual attention (notify user)
+    ## To remove duplicates, create a temporary column, 'secondary' that 
+    ##    checks for N > 1 and for any NA in latitude. 
+    DT.geocode_with_tamu[, N_by_id := .N, by=join_id]
+    DT.geocode_with_tamu[, secondary := N_by_id > 1 & (is.na(latitude))]
+    ## In the (very rare) event that there is an ID with all rows labeled as secondary,
+    ##   change the first one to non-secondary
+    DT.geocode_with_tamu[DT.geocode_with_tamu[, all(secondary), by=join_id][(V1)], secondary := c(TRUE, rep(FALSE, .N-1)), by=join_id]
+    ## Confirm not all are marked secondary
+    if (nrow(DT.geocode_with_tamu[, all(secondary), by=join_id][(V1)]))
+        warning ("There was an internal error. Some join_id s of DT.geocode_with_tamu have been marked as fully secondary. This means they will be dropped altogether and not added back into the original DT")
+    ## Drop any secondary rows
+    DT.geocode_with_tamu <- DT.geocode_with_tamu[!(secondary)]
+    suppressWarnings(DT.geocode_with_tamu[, c("secondary", "N_by_id") := NULL])
+
+    ## Check for remaining duplicates and notify the user if any remain
+    ## The above only drops rows with NAs in the latitude.
+    ## If any further duplicates remain, this means that they received more than one geocode location
+    ## Notify user, as this might require manual attention
     dups <- DT.geocode_with_tamu[, .N, keyby=join_id][N > 1]
     if (nrow(dups)) {
         # print out a sampling, ±2 rows
         warning ("Some join_ids have more than one value", call.=TRUE)
         print(DT.geocode_with_tamu[dups[sort(sample(nrow(dups), 10))]])
     }
-
 
     file_jesus <- jesusForData(DT.geocode_with_tamu, envir=environment(), verbose=FALSE)
 
