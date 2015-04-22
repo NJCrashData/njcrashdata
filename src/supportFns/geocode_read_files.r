@@ -30,6 +30,15 @@ read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "lo
     setnames(DT.geocode_with_tamu, "internal_id", "join_id")
     setkeyIfNot(DT.geocode_with_tamu, join_id, verbose=FALSE)
 
+    ## Check for Duplicate values of join_id
+    dups <- DT.geocode_with_tamu[, .N, keyby=join_id][N > 1]
+    if (nrow(dups)) {
+        # print out a sampling, ±2 rows
+        warning ("Some join_ids have more than one value", call.=TRUE)
+        print(DT.geocode_with_tamu[dups[sort(sample(nrow(dups), 10))]])
+    }
+
+
     file_jesus <- jesusForData(DT.geocode_with_tamu, envir=environment(), verbose=FALSE)
 
     if (!any(colsToBring %in% names(DT))) {
