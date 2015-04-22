@@ -138,7 +138,9 @@ geocode_tamu <- function(
         }
     })
 
-    handle <- getCurlHandle()
+    # handle <- getCurlHandle()
+    multiHandle = getCurlMultiHandle()
+    getURIAsynchronous
     for(i in seq(iter_starts)) {
         start <- iter_starts[[i]]
         end   <- iter_ends  [[i]]
@@ -148,7 +150,8 @@ geocode_tamu <- function(
         verboseMsg(verbose, sprintf(fmt.iter, start, end, formnumb(length(URLS), round=FALSE)), minw=82, frmt="%H:%M:%S %Z", time=TRUE)
         ## Hit the API, request results
         # sans URLencode :: url_results <- try(getURL( gsub(" ", "%20", URL_batch), curl=handle )) ## TODO use sapply(..., URLencode)
-        url_results <- try( getURL(url=URL_batch, curl=handle, async=FALSE) ) ## TODO use sapply(..., URLencode)
+        # url_results <- try( getURL(url=URL_batch, curl=handle, async=FALSE) )
+        url_results <- try( getURIAsynchronous(url=URL_batch, multiHandle=multiHandle) )
         if (isErr(url_results)) {
             warning("getURL() resulted in an error for the last batch. Exiting for loop. Sample URL:\n", tail(URL_batch, 1), call.=FALSE)
             break
