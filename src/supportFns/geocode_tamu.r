@@ -17,6 +17,10 @@ geocode_tamu <- function(
   , notStore="false"
   , version="4.01"
   , base_url = "http://geoservices.tamu.edu/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V04_01.aspx?"
+
+  ## CURL OPTIONS
+  , ssl.verifypeer = TRUE
+  , timeout = 10
   , check_states = TRUE
   , verbose=TRUE
   , internal_id = NULL
@@ -27,6 +31,7 @@ geocode_tamu <- function(
   , iter_size = 10000
   , break_on_blank = TRUE
   , bad_request_file = data.p("geocode_tamu_results", "join_ids_yielding_badrequests", ext="csv")
+  , balance_threshold = 2500
   , ...
 ) {
 
@@ -43,6 +48,13 @@ geocode_tamu <- function(
     if (!is.null(colsToReturn) && !is.character(colsToReturn))
         warning ("colsToReturn should be a character vector or should be NULL")
 
+    if (iter_size < 30 | iter_size > 500)
+        warning("ideal value for 'iter_size' is between 100 and 300. Current value is ", iter_size, call.=FALSE)
+    if (iter_size > (balance_threshold / 2)) {
+        warning("'iter_size' cannot exceed 1/2 * balance_threshold\niter_size is ", iter_size, " - maximum allowed is ", balance_threshold / 2, call.=FALSE)
+        iter_size <- balance_threshold / 2
+    }
+
     ## Most function arguments are part of the api call, except for the following
     ## These will not be used in the final output
     non_api_args <- c("non_api_args", "base_url", "check_states", "verbose", "internal_id"
@@ -51,7 +63,7 @@ geocode_tamu <- function(
 
     ## CLEAN UP ARGUMENT INPUTS
     ## (1) all NAs should be changed to ''
-    # (2) all logical arugments should be changed to 'true', 'false'UR
+    ## (2) all logical arugments should be changed to 'true', 'false'UR
     Args <- collectArgs(except=non_api_args, incl.dots=TRUE)
     for (arg_name in names(Args)) {
         assign(arg_name, removeNA(Args[[arg_name]], replace=''))
@@ -81,6 +93,7 @@ geocode_tamu <- function(
     URLS <- paste0(base_url, Args_for_url)
     # URLS <- gsub(" ", "%20", URLS) ## TODO use sapply(..., URLencode)
     setattr(URLS, "names", Args_for_url)
+    verboseMsg(verbose, "Cleaning up spaces and other strings on ", length(URLS), " URLs", minw=82, sep="", time=TRUE, frmt="%H:%M:%S %Z")
     URLS <- sapply(URLS, URLencode)
 
     ## ERROR CHECK:  Confirm that there is at least one URL created
@@ -106,7 +119,7 @@ geocode_tamu <- function(
 
     ## Write data to file
     file_out <- file.path(folder, file_name)
-    verboseMsg(verbose, "API results will be written to\n   \"", file_out, "\"    ", minw=82, sep="")
+    verboseMsg(verbose, "API results will be written to\n   \"", file_out, "\"    ", minw=82, sep="", time=TRUE, frmt="%H:%M:%S %Z")
 
 
     ## Create the file and directory
@@ -122,36 +135,53 @@ geocode_tamu <- function(
         stop ("Internal Error:  iter_starts or iter_ends are invalid. Error occurred right before iterating over URLS")
     }
 
-    
     ## string format for verbose output
     fmt.iter <- sprintf("Querying TAMU API for addresses # %% %1$ii -%% %1$ii (of %%s total)", 1+ceiling(log10(length(URLS))))
 
 
     ## Check available api_credits
+    balance <- 1000
     try({
         api_credits <- get_available_credits_tamu(apikey=apikey)
-        if (api_credits == 0 && isTRUE(break_on_blank)) {
+        ## Try reloading
+        if (api_credits < balance_threshold)
+            api_credits <- addCredits(balance_threshold=balance_threshold)
+        ## Check if still 0
+        if (api_credits <= 0 && isTRUE(break_on_blank)) {
             warning ("The given apikey has zero credits remaining before even starting api call.\nExiting and returning NULL", call.=FALSE)
             return(NULL)
         } else if (api_credits < length(URLS)) {
-            warning ("The given apikey has only ", formnumb(api_credits), " remaining credits -- less than the ", formnumb(length(URLS)), " calls to be made", call.=FALSE)
+            ## No longer warn. Now just add credits
+            # warning ("The given apikey has only ", formnumb(api_credits), " remaining credits -- less than the ", formnumb(length(URLS)), " calls to be made", call.=FALSE)
         }
+        balance <- api_credits
     })
 
-    # handle <- getCurlHandle()
-    multiHandle = getCurlMultiHandle()
-    getURIAsynchronous
+
+
+    handle <- getCurlHandle()
+    multiHandle <- getCurlMultiHandle()
+    useragent <- getUserAgent()
+
     for(i in seq(iter_starts)) {
+        browser(expr=inDebugMode("geocode_tamu"), text="in geocode_tamu at the top of for loop")
         start <- iter_starts[[i]]
         end   <- iter_ends  [[i]]
+
+        ## Add credits if needed
+        if ((balance - start - 1) < balance_threshold && get_available_credits_tamu() < balance_threshold) {
+            api_credits <- addCredits(balance_threshold=balance_threshold)
+            balance <- balance + min(0, attr(api_credits, "increase"))
+        }
+
         inds <- seq.int(from=start, to=end, by=1)
         URL_batch <- URLS[inds]
         internal_id_batch <- internal_id[inds]
         verboseMsg(verbose, sprintf(fmt.iter, start, end, formnumb(length(URLS), round=FALSE)), minw=82, frmt="%H:%M:%S %Z", time=TRUE)
         ## Hit the API, request results
         # sans URLencode :: url_results <- try(getURL( gsub(" ", "%20", URL_batch), curl=handle )) ## TODO use sapply(..., URLencode)
-        # url_results <- try( getURL(url=URL_batch, curl=handle, async=FALSE) )
-        url_results <- try( getURIAsynchronous(url=URL_batch, multiHandle=multiHandle) )
+        url_results <- try( getURL(url=URL_batch, curl=handle, async=FALSE, useragent=useragent, timeout=timeout, ssl.verifypeer=ssl.verifypeer) )
+        # url_results <- try( getURIAsynchronous(url=URL_batch, curl=handle, multiHandle=multiHandle, useragent=useragent, timeout=timeout, ssl.verifypeer=ssl.verifypeer) )
         if (isErr(url_results)) {
             warning("getURL() resulted in an error for the last batch. Exiting for loop. Sample URL:\n", tail(URL_batch, 1), call.=FALSE)
             break
@@ -184,7 +214,11 @@ geocode_tamu <- function(
 
         if (isTRUE(anyBlank)) {
             credits <- try(get_available_credits_tamu(apikey=apikey), silent=TRUE)
-            if (isErr(credits) || !credits) {
+            if (!isErr(credits) && credits <= 0) {
+                warning ("adding credits due to zero (this point should not have been reached -- 'balance' value may be thrown off)", call.=FALSE)
+                credits <- addCredits(balance_threshold=balance_threshold)
+            }
+            if (isErr(credits) || credits <= 0) {
                 warning ("Out of api credits. Breaking out of for-loop", call.=FALSE)
                 break
             }
@@ -336,7 +370,7 @@ geocode_google <- function(
         dir.create(dirname(file_out), showWarnings=FALSE, recursive=TRUE)
         write(x=c("join_id", "raw_json"), file=file_out, ncolumns=2, append=TRUE, sep=file_sep)
     }
-    verboseMsg(verbose, "API results will be written to\n   \"", file_out, "\"    ", minw=82, sep="")
+    verboseMsg(verbose, "API results will be written to\n   \"", file_out, "\"    ", minw=82, sep="", time=TRUE, frmt="%H:%M:%S %Z")
 
     ## Output
     verboseMsg(verbose, "Will attempt to geocode", length(URLS), "addresses\n")
