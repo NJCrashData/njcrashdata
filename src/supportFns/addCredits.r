@@ -7,7 +7,9 @@ addCredits <- function(username=getTAMUun(), password=getTAMUpw(), loginurl="htt
   ## Check the balance. If it is above balance_threshold (generally 2,500), do not proceed
   creditBalance_before <- get_available_credits_tamu()
   if (creditBalance_before > balance_threshold) {
-    message("Credit balance is ", formnumb(creditBalance_before), "\nCannot add credits until balance drops below ", formnumb(balance_threshold) )
+    message("addCredits() was just called, but credit balance is ", formnumb(creditBalance_before), ", which is above the threshold.\nCannot add credits until balance drops below ", formnumb(balance_threshold) )
+    setattr(creditBalance_before, "increase", 0)
+    return(creditBalance_before)
   }
 
   ## Set curl options:
@@ -16,7 +18,9 @@ addCredits <- function(username=getTAMUun(), password=getTAMUpw(), loginurl="htt
           , followlocation=TRUE
           , autoreferer=TRUE
           , curl=curl
-          , agent=getUserAgent()
+          , useragent=getUserAgent()
+          , timeout=10
+          , ssl.verifypeer=FALSE
           )
 
   ## Load the page for the first time to capture VIEWSTATE and other hidden params:
@@ -60,14 +64,18 @@ addCredits <- function(username=getTAMUun(), password=getTAMUpw(), loginurl="htt
   ## Post the form to add the credits
   html_creditsadded <- postForm(activityurl, .params = params.math, curl = curl)
 
+  browser(expr=inDebugMode("addCredits"), text="in addCredits, just after posting form to add credit")
+  
   ## Check the balance again to confirm the credits were added succesfully
   creditBalance_after <- get_available_credits_tamu()
 
   if (creditBalance_before >= creditBalance_after) {
     warning("Internal Error: Credit balance did not increase after running addCredits()\nMORE INFO: creditBalance_before = ", creditBalance_before , ";  creditBalance_after = ", creditBalance_after, call.=FALSE)
   } else if (verbose) {
-    message("Credit balance has been increased to ", formnumb(creditBalance_after))
+    try(message("Credit balance has been increased to ", formnumb(creditBalance_after)))
   }
+
+  setattr(creditBalance_after, "increase", creditBalance_after - creditBalance_before + 1)
 
   ## cleanup
   rm(curl)
