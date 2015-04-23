@@ -146,6 +146,7 @@ if (FALSE) {
 ## --------------------------- ##
 
 ## Add in previously processed Lat/Lng Data
+cls()
 {
   try(cat("Available Credits : ", get_available_credits_tamu(), "\n"), silent=TRUE)
   if ("latitude" %in% names(DT.Accidents))
@@ -161,6 +162,9 @@ if (FALSE) {
   rbind(DT.Accidents[is.na(match_type), .N, keyby=list(County, Year)], data.table(County=c(.dash,"TOTAL"), Year=c(.dash,"TOTAL"), N=c(.dash,DT.Accidents[is.na(match_type), .N])) )[N != .dash, N := formnumb(as.numeric(N), round=TRUE)][]
 }
 
+" DONT FORGET UTILS"
+if (FALSE)
+.us()
 
 if (FALSE) 
 {
@@ -169,6 +173,8 @@ if (FALSE)
     match_type <- NA
 
   ### Query the TAMU API
+  closeAllConnections()
+  gc()
   DT.ret <- {
     DT.Accidents[
       i = {if (exists("match_type", inherits=FALSE)) is.na(match_type) else TRUE}
@@ -183,6 +189,7 @@ if (FALSE)
                   , folder = data.p("geocode_tamu_results", County[[1]])
                   , colsToReturn = c("internal_id", colsToBring)
                   , iter_size = 150
+                  , timeout = 2
                 )]
   }
 
