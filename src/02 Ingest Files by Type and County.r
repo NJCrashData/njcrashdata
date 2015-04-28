@@ -28,12 +28,12 @@ stopifnot(files.info[, lapply(Report_Types,  "%in%", report_type), by=kCols.yc][
 # DT.toDownload[tmp_DT.missing[, 1:2, with=FALSE]][, file.exists(file.out.zip)]
 
 
-
 ll_DT.Drivers     <- ingest_report_type("Drivers",     minYear=minYear,  NJ=FALSE)
 ll_DT.Occupants   <- ingest_report_type("Occupants",   minYear=minYear,  NJ=FALSE)
 ll_DT.Pedestrians <- ingest_report_type("Pedestrians", minYear=minYear,  NJ=FALSE)
 ll_DT.Vehicles    <- ingest_report_type("Vehicles",    minYear=minYear,  NJ=FALSE)
 ll_DT.Accidents   <- ingest_report_type("Accidents",   minYear=minYear,  NJ=FALSE)
+# ll_DT.Accidents   <- ingest_report_type("Accidents",   minYear=minYear,  NJ=FALSE, Counties="Bergen")
 
 ## All of the main join_id from ll_DT.Accidents
 DT.join_ids <- lapply(ll_DT.Accidents, function(DT) DT[, list(join_id=unique(join_id))])
