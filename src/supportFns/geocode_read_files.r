@@ -7,7 +7,7 @@ read_all_tamu_files_and_add_to_DT_ <- function(DT, colsToBring=c("latitude", "lo
     files <- dir(data.p("geocode_tamu_results"), recursive=TRUE, full=TRUE, pattern="\\.csv$")
     files <- files[!grepl("join_ids_yielding_badrequests|scratch", files)]
     setattr(files, "names", basename(files))
-    verboseMsg(TRUE, "reading", length(files), "files", minw=88)
+    verboseMsg(TRUE, "reading", length(files), "files of previously geocoded IDs", minw=88)
 
     ll.ret <- list()
     for (i in seq(files)) {
