@@ -5,8 +5,9 @@ setProject(proj="NJCrashData", create=TRUE, subl=FALSE, load=FALSE)
 minYear <- 2011
 
 
-## For test work
-Cnty <- "Monmouth"
-Y <- 2013
+# ## For test work
+# Cnty <- "Monmouth"
+# Y <- 2013
 
 verbose <- TRUE
+options("verbose_seconds" = TRUE)
