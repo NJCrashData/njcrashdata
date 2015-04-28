@@ -21,7 +21,27 @@
 #     rm(DT.Accidents_ESSEX_MONMOUTH)
 # }
 
+## Alternate, for a list of a single county
+#   if (is.list(DT.Accidents))
+#      DT.Accidents <- rbindlist(DT.Accidents)
+#      setkeyIfNot(DT.Accidents, join_id, verbose=FALSE)
+#      addParsedjoin_id_(DT.Accidents)
 
+
+
+## NEW 2014-04-23 ... using all counties at once
+DT.Accidents <-  rbindlist(ll_DT.Accidents)
+
+## Save then drop the ll_DTs
+verboseMsg(verbose, "Saving then removing each ll_DT")
+{jesusForData(ll_DT.Drivers);     rm(ll_DT.Drivers)}
+{jesusForData(ll_DT.Occupants);   rm(ll_DT.Occupants)}
+{jesusForData(ll_DT.Pedestrians); rm(ll_DT.Pedestrians)}
+{jesusForData(ll_DT.Vehicles);    rm(ll_DT.Vehicles)}
+{jesusForData(ll_DT.Accidents);   rm(ll_DT.Accidents)}
+
+verboseMsg(verbose, "Parsing Join Columns For all DTs")
+addParsedjoin_id_(DT.Accidents)
 
 ## -------------------- DT.Drivers ----------------------------------
 
@@ -82,16 +102,16 @@ cols.charsToClean <- c("location_of_crash", "Cross_Street_Name", "location_direc
 DT.Accidents[, badge_numb := trim(gsub("\\#", "", badge_numb))]
 
 ## clean up numerics
-verboseMsg(verbose, "Converting numeric columns")
+verboseMsg(verbose, "Converting numeric columns", seconds=TRUE)
 for (col in cols.numbers)
   DT.Accidents[, (col) := as.numeric(trim(as.character(get(col))))]
 
 ## clean up numerics
-verboseMsg(verbose, "Converting factor columns")
+verboseMsg(verbose, "Converting factor columns", seconds=TRUE)
 for (col in cols.factorNotNumber)
   DT.Accidents[, (col) := factor(basicStringCleaning(get(col)))]
 
-verboseMsg(verbose, "Cleaning character columns")
+verboseMsg(verbose, "Cleaning character columns", seconds=TRUE)
 for (col in cols.charsToClean)
   DT.Accidents[, (col) := basicStringCleaning(get(col))]
 
@@ -102,25 +122,37 @@ if (!all(4 == nchar(DT.Accidents[!is.na(time_of_crash), time_of_crash])))
 
 ## Create a field for datetime_of_crash -- This will be NA whenever time_of_crash is NA.
 ## We dont want to use a default time, since it will default to Midnight, and that is not accurrate
-verboseMsg(verbose, "Creating column datetime_of_crash")
+verboseMsg(verbose, "Creating column datetime_of_crash", seconds=TRUE)
 DT.Accidents[,  datetime_of_crash := as.POSIXct(sprintf("%s %s", date_of_crash, time_of_crash), format="%Y-%m-%d %k%M", tz="America/New_York")]
 ## SHOW RESULTS: 
 DT.Accidents[is.na(time_of_crash), list(date_of_crash, time_of_crash, datetime_of_crash)]
 
-## Create streetAddress using location and cross street
+BackUpOrRestore("DT.Accidents", force=TRUE, postfix=".bak_preStreetClean")
+BackUpOrRestore("DT.Accidents", postfix=".bak_preStreetClean")
+
+## Identify if is parking lot
 ## TODO: Incorporate ramp information, distance, etc
-pat_to_not_include <- "(Parking|lot|deck|garage|Priv*Property)"
-    ## Check if has street number
-DT.Accidents[, geo.has_street_number := grepl("^\\s*\\d", location_of_crash)]
-    ## Check if Cross_Street_Name is valid and that street has no number
-DT.Accidents[, geo.include_cross_st := !is.na(Cross_Street_Name) & !grepl(pat_to_not_include, Cross_Street_Name, ignore.case=TRUE) & !geo.has_street_number]
-DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(geo.include_cross_st, no="", yes=paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
+{
+  verboseMsg(verbose, "Cleaning address data")
+  pat_parkingLots    <- get_parking_lot_pattern()
+  pat_road_structure <- get_road_structure_pattern()
+  DT.Accidents[, geo.is_parking_lot := grepl(pat_parkingLots, location_of_crash, ignore.case=TRUE) | grepl(pat_parkingLots, Cross_Street_Name, ignore.case=TRUE)]
 
+  ## Create streetAddress using location and cross street
+      ## Check if has street number
+  DT.Accidents[, geo.has_street_number := grepl("^\\s*\\d", location_of_crash)]
+      ## Check if Cross_Street_Name is valid and that street has no number
+  DT.Accidents[, geo.include_cross_st := !is.na(Cross_Street_Name) & !grepl(pat_parkingLots, Cross_Street_Name, ignore.case=TRUE) & !grepl(pat_road_structure, Cross_Street_Name, ignore.case=TRUE) & !geo.has_street_number]
+  DT.Accidents[, geo.streetAddress := paste0(location_of_crash, ifelse(geo.include_cross_st, no="", yes=paste(" and", gsub(".*/\\s*", "", Cross_Street_Name))))]
 
-## Some basic cleaning
-DT.Accidents[, geo.streetAddress := clean_streetAddress(geo.streetAddress, drop_parkingLots=TRUE)]
-## SHOW
-DT.Accidents[grepl("'", geo.streetAddress) & !grepl("'S", geo.streetAddress)]
+  ## Some basic cleaning
+  DT.Accidents[, geo.streetAddress := clean_streetAddress(geo.streetAddress, drop_parkingLots=TRUE)]
+  DT.Accidents[grepl("'", geo.streetAddress), geo.streetAddress := gsub("\'", "", geo.streetAddress)]
+
+  ## SHOW
+  DT.Accidents[grepl("'", geo.streetAddress) & !grepl("'S", geo.streetAddress)]
+  DT.Accidents[grepl("'|\"", geo.streetAddress)]
+}
 
 ## Confirm that no NAs where introduced
 colsAdded <- c("datetime_of_crash", "geo.include_cross_st", "geo.has_street_number", "geo.streetAddress")
@@ -146,31 +178,14 @@ if (FALSE) {
 ## --------------------------- ##
 
 ## Add in previously processed Lat/Lng Data
-cls()
-{
-  try(cat("Available Credits : ", get_available_credits_tamu(), "\n"), silent=TRUE)
-  if ("latitude" %in% names(DT.Accidents))
-    message("Current number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
-  colsToBring <- c("latitude", "longitude", "match_type", "matched_location_type")
-  invisible(suppressWarnings(DT.Accidents[, (colsToBring) := NULL]))
-  read_all_tamu_files_and_add_to_DT_(DT=DT.Accidents, colsToBring=colsToBring, verbose=FALSE)
-  message("Updated number of non-NAs in latitude is ", formnumb(DT.Accidents[!is.na(latitude), .N], round=FALSE))
-
-  cat("Approx ", DT.Accidents[is.na(match_type), formnumb(.N)] , "left to geocode   and    ",DT.Accidents[(match_type == "bad_request" & !is.na(match_type)), formnumb(.N)], " with bad_request\n")
-  # DT.Accidents[is.na(latitude) & is.na(match_type), .N, keyby=list(County, Year, Above_Split = as.num.as.char(Municipality_Code) > MunSplit)]
-  .dash <- "------"; 
-  rbind(DT.Accidents[is.na(match_type), .N, keyby=list(County, Year)], data.table(County=c(.dash,"TOTAL"), Year=c(.dash,"TOTAL"), N=c(.dash,DT.Accidents[is.na(match_type), .N])) )[N != .dash, N := formnumb(as.numeric(N), round=TRUE)][]
-}
+source(src.p("03b Add Geodata from disk.r"))
 
 " DONT FORGET UTILS"
 if (FALSE)
 .us()
 
-if (FALSE) 
+# if (FALSE) 
 {
-
-  if ("match_type" %ni% names(DT.ret))
-    match_type <- NA
 
   ### Query the TAMU API
   closeAllConnections()
@@ -193,16 +208,21 @@ if (FALSE)
                 )]
   }
 
-  DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
-  if (is.data.table(DT.ret) && identical(DT.ret[["internal_id"]], DT.Accidents[["join_id"]])) {
-      if (any(colsToBring %in% names(DT.Accidents)))
-        warning ("Some columns in colsToBring is/are already in DT.Accidents --- DT.ret NOT brought over")
-      else 
-        DT.Accidents[, colsToBring := DT.ret[, !"internal_id", with=FALSE] ]
-  } else {
-    ## May not be data.table
-      warning ("DT.ret did not have the correct internal_id values. Try merging")
-  }
+  source(src.p("03b Add Geodata from disk.r"))
+
+  ## OLD -- use  "03b Add Geodata from disk.r"  instead
+  ## ---------------------------------------------------------------- ##
+  # DT.Accidents[join_id %in% DT.ret[match_type == "bad_request", internal_id]]
+  # if (is.data.table(DT.ret) && identical(DT.ret[["internal_id"]], DT.Accidents[["join_id"]])) {
+  #     if (any(colsToBring %in% names(DT.Accidents)))
+  #       warning ("Some columns in colsToBring is/are already in DT.Accidents --- DT.ret NOT brought over")
+  #     else 
+  #       DT.Accidents[, colsToBring := DT.ret[, !"internal_id", with=FALSE] ]
+  # } else {
+  #   ## May not be data.table
+  #     warning ("DT.ret did not have the correct internal_id values. Try merging")
+  # }
+  ## ---------------------------------------------------------------- ##
 }
 
 ## --------------------------- ##
